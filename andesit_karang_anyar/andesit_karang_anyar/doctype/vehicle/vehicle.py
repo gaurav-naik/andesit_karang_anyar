@@ -5,6 +5,12 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
+from frappe import _
 
 class Vehicle(Document):
-	pass
+	def validate(self):
+		self.validate_customer_supplier()
+
+	def validate_customer_supplier(self):
+		if not self.wb_customer and not self.wb_supplier:
+			frappe.throw(_("Either Customer or Supplier is mandatory"))
