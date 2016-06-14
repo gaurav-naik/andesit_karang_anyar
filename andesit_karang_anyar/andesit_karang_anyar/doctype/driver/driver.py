@@ -7,13 +7,15 @@ import frappe
 from frappe import _
 from frappe.model.document import Document
 
+
+
 class Driver(Document):
 	def validate(self):
 		self.validate_licence_number()
 
-	def validate_license_number(self):
-		if self.wb_driver_licence != 12:
-			frappe.throw(_("Licnece Number is not Valid"))
+	def validate_licence_number(self):
+		if len(self.wb_driver_licence) != 12:
+			frappe.throw(_("Licnece Number is not Valid.It should be 12 digit format."))
 
 
 
