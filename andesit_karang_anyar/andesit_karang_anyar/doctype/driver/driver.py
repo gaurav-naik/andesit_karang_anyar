@@ -19,7 +19,7 @@ class Driver(Document):
 			frappe.throw(_("License Number is not too short. It should be 12 digit format."))
 
 	def validate_driver_cu_su(self):
-		if not self.wb_customer and self.wb_supplier:
+		if not self.wb_customer and not self.wb_supplier:
 			frappe.throw(_("Either Customer or Supplier must be selected."))
 
 
