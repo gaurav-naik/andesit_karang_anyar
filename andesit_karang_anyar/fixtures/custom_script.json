@@ -2,28 +2,10 @@
  {
   "docstatus": 0, 
   "doctype": "Custom Script", 
-  "dt": "Weigh Bridge Weighing", 
-  "modified": "2016-06-17 14:13:39.810887", 
-  "name": "Weigh Bridge Weighing-Client", 
-  "script": "cur_frm.add_fetch(\"wb_vehicle_tare_weight\", \"wbw_vehicle_tare_weight\", \"wbw_vehicle_tare_weight\")", 
-  "script_type": "Client"
- }, 
- {
-  "docstatus": 0, 
-  "doctype": "Custom Script", 
-  "dt": "Driver", 
-  "modified": "2016-06-17 14:19:09.512595", 
-  "name": "Driver-Client", 
-  "script": "frappe.ui.form.on(\"Driver\", \"validate\", function(frm) {\n    if (frm.doc.wb_driver_licence && frm.doc.wb_driver_licence.length < 12) {\n        msgprint(\"Invalid Licence Number. It should be 12 digit format.\");\n       validated = false;\n    }\n     \n});\n\n\n\n", 
-  "script_type": "Client"
- }, 
- {
-  "docstatus": 0, 
-  "doctype": "Custom Script", 
-  "dt": "Vehicle", 
-  "modified": "2016-06-17 15:11:40.387191", 
-  "name": "Vehicle-Client", 
-  "script": "cur_frm.fields_dict['wb_customer'].get_query = function(doc, dt, dn) {\n  return {\n    filters: [\n    ['DocType', 'name', 'in', 'Customer'],\n  ]\n  }\n};\n\n\nfrappe.ui.form.on(\"Vehicle\", {\n    validate: function(frm) {\n        $.each(frm.doc.wb_vehicle_drivers, function(i, driver) {\n          if (driver.wb_driver_license && driver.wb_driver_license.length!=12) {\n              driver.wb_driver_license = '';\n              msg = \"Invalid License Number\";\n          }\n        });\n\n        if(msg) {\n     validated = false;\n     refresh_field(\"wb_vehicle_drivers\");\n     frappe.throw(msg);\n  }\n    }\n})\n", 
+  "dt": "Sales Order", 
+  "modified": "2016-06-18 12:33:42.817101", 
+  "name": "Sales Order-Client", 
+  "script": "cur_frm.set_query(\"wbw_vehicle\", \"wbw_customer\", function(doc, cdt, cdn)  {\n\treturn{\n\t\tfilters: [\n\t\t\t['Vehicle', 'wb_customer', '=', doc.customer]\n\t\t]\n\t}\n});\n\ncur_frm.set_query(\"wbw_driver\", \"wbw_customer\", function(doc, cdt, cdn)  {\n\treturn{\n\t\tfilters: [\n\t\t\t['Driver', 'wb_customer', '=', doc.customer]\n\t\t]\n\t}\n});\n", 
   "script_type": "Client"
  }
 ]
