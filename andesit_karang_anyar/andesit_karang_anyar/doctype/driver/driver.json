@@ -1,7 +1,7 @@
 {
  "allow_copy": 0, 
  "allow_import": 0, 
- "allow_rename": 0, 
+ "allow_rename": 1, 
  "autoname": "field:wb_driver_licence", 
  "creation": "2016-06-13 17:46:46.732943", 
  "custom": 0, 
@@ -270,7 +270,7 @@
  "issingle": 0, 
  "istable": 0, 
  "max_attachments": 0, 
- "modified": "2016-06-18 13:04:52.592377", 
+ "modified": "2016-06-18 14:24:34.483807", 
  "modified_by": "Administrator", 
  "module": "Andesit Karang Anyar", 
  "name": "Driver", 
@@ -300,7 +300,8 @@
  ], 
  "read_only": 0, 
  "read_only_onload": 0, 
+ "search_fields": "wb_driver_fn, wb_driver_licence", 
  "sort_field": "modified", 
  "sort_order": "DESC", 
- "title_field": "wb_driver_licence"
+ "title_field": "wb_driver_fn"
 }
