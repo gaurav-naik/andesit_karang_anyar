@@ -3,9 +3,9 @@
   "docstatus": 0, 
   "doctype": "Custom Script", 
   "dt": "Sales Order", 
-  "modified": "2016-06-19 15:17:50.172381", 
+  "modified": "2016-06-20 23:21:58.231556", 
   "name": "Sales Order-Client", 
-  "script": "cur_frm.set_query(\"wbw_vehicle\", \"wbw_customer\", function(doc, cdt, cdn)  {\n\treturn{\n\t\tfilters: [\n\t\t\t['Vehicle', 'wb_customer', '=', doc.customer]\n\t\t]\n\t}\n});\n\ncur_frm.set_query(\"wbw_driver\", \"wbw_customer\", function(doc, cdt, cdn)  {\n\treturn{\n\t\tfilters: [\n\t\t\t['Driver', 'wb_customer', '=', doc.customer]\n\t\t]\n\t}\n});\n\n\n\n", 
+  "script": "cur_frm.set_query(\"wbw_vehicle\", \"wbw_customer\", function(doc, cdt, cdn)  {\n\treturn{\n\t\tfilters: [\n\t\t\t['Vehicle', 'wb_customer', '=', doc.customer]\n\t\t]\n\t}\n});\n\ncur_frm.set_query(\"wbw_driver\", \"wbw_customer\", function(doc, cdt, cdn)  {\n\treturn{\n\t\tfilters: [\n\t\t\t['Driver', 'wb_customer', '=', doc.customer]\n\t\t]\n\t}\n});\n\ncur_frm.cscript.custom_refresh = function(doc) {\n    // use the __islocal value of doc, to check if the doc is saved or not\n    cur_frm.set_df_property(\"wbw_customer\", \"read_only\", doc.__islocal ? 0 : 1);\n}\n", 
   "script_type": "Client"
  }, 
  {
@@ -15,6 +15,15 @@
   "modified": "2016-06-19 13:48:06.978237", 
   "name": "Purchase Order-Client", 
   "script": "cur_frm.set_query(\"wbw_vehicle\", \"wbw_supplier\", function(doc, cdt, cdn)  {\n\treturn{\n\t\tfilters: [\n\t\t\t['Vehicle', 'wb_supplier', '=', doc.supplier]\n\t\t]\n\t}\n});\n\ncur_frm.set_query(\"wbw_driver\", \"wbw_supplier\", function(doc, cdt, cdn)  {\n\treturn{\n\t\tfilters: [\n\t\t\t['Driver', 'wb_supplier', '=', doc.supplier]\n\t\t]\n\t}\n});\n", 
+  "script_type": "Client"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Custom Script", 
+  "dt": "Weigh Bridge Weighing", 
+  "modified": "2016-06-20 14:56:32.774327", 
+  "name": "Weigh Bridge Weighing-Client", 
+  "script": "frappe.ui.form.on(\"Weigh Bridge Weighing\", \"refresh\", function(frm) {\n    // use the __islocal value of doc, to check if the doc is saved or not\n    frm.set_df_property(\"wbw_customer\", \"read_only\", frm.doc.__islocal ? 0 : 1);\n});\n\n", 
   "script_type": "Client"
  }
 ]
