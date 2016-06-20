@@ -3,7 +3,7 @@
   "docstatus": 0, 
   "doctype": "Custom Script", 
   "dt": "Sales Order", 
-  "modified": "2016-06-20 23:21:58.231556", 
+  "modified": "2016-06-20 23:35:47.623919", 
   "name": "Sales Order-Client", 
   "script": "cur_frm.set_query(\"wbw_vehicle\", \"wbw_customer\", function(doc, cdt, cdn)  {\n\treturn{\n\t\tfilters: [\n\t\t\t['Vehicle', 'wb_customer', '=', doc.customer]\n\t\t]\n\t}\n});\n\ncur_frm.set_query(\"wbw_driver\", \"wbw_customer\", function(doc, cdt, cdn)  {\n\treturn{\n\t\tfilters: [\n\t\t\t['Driver', 'wb_customer', '=', doc.customer]\n\t\t]\n\t}\n});\n\ncur_frm.cscript.custom_refresh = function(doc) {\n    // use the __islocal value of doc, to check if the doc is saved or not\n    cur_frm.set_df_property(\"wbw_customer\", \"read_only\", doc.__islocal ? 0 : 1);\n}\n", 
   "script_type": "Client"
