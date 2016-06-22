@@ -1,0 +1,34 @@
+<p><button class="btn btn-xs btn-default btn-driver">{{ __("New Driver") }}</button></p>
+<div class="clearfix"></div>
+{% for (var i=0, l=driver_list.length; i<l; i++) { %}
+<div class="well well-sm" style="margin-bottom: 5px;">
+    <div class="row">
+        <div class="col-xs-2">
+             <a href="#Form/Driver/{%= encodeURIComponent(driver_list[i].wb_driver_licence)%}">
+                <div id="driverpic_outer">
+
+                    {% if(driver_list[i].wb_driver_photo != null) { %}
+                        <img src="{%= encodeURIComponent(driver_list[i].wb_driver_photo)%}" class="img-responsive img-thumbnail" style="max-width: 108px; min-width: 108px;" />
+                    {% } else { %}
+                        <div class="missing-image attach-missing-image">
+                            <i class="octicon octicon-circle-slash"></i>
+                        </div>
+                    {% } %}
+                </div>
+             </a>
+        </div>            
+        <div class="col-xs-10">
+            <div id="name">
+                <label>
+                    <a href="#Form/Driver/{%= encodeURIComponent(driver_list[i].wb_driver_licence)%}"> 
+                        {{ driver_list[i].wb_driver_fn }} {{ driver_list[i].wb_driver_ln }}
+                    </a>
+                </label>
+            </div>
+            <div id="licence_no">
+                Licence No: {{ driver_list[i].wb_driver_licence }}
+            </div>
+        </div>
+    </div>
+</div>   
+{% } %}
