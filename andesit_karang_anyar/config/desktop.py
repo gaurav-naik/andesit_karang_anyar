@@ -9,6 +9,6 @@ def get_data():
 			"color": "#16161D",
 			"icon": "icon-truck",
 			"type": "module",
-			"label": _("Andesit Karang Anyar")
+			"label": _("AKA Weighbridge Management")
 		}
 	]
