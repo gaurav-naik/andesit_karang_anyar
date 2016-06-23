@@ -4,10 +4,12 @@ frappe.provide("erpnext.utils");
 
 frappe.ui.form.on('Vehicle', {
 	refresh: function(frm) {
-		$(frm.fields_dict['drivers'].wrapper)
-			.html(frappe.render_template("driver_list", cur_frm.doc.__onload))
-			.find(".btn-driver").on("click", function() {
-				new_doc("Driver");
-			});
+		if (!cur_frm.doc.__islocal) {
+			$(frm.fields_dict['drivers'].wrapper)
+				.html(frappe.render_template("driver_list", cur_frm.doc.__onload))
+				.find(".btn-driver").on("click", function() {
+					new_doc("Driver");
+				});
+		}
 	}
 });
