@@ -17,6 +17,7 @@ app_license = "GPL v3"
 # include js, css files in header of desk.html
 # app_include_css = "/assets/andesit_karang_anyar/css/andesit_karang_anyar.css"
 # app_include_js = "/assets/andesit_karang_anyar/js/andesit_karang_anyar.js"
+app_include_js = "/assets/js/aka.min.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/andesit_karang_anyar/css/andesit_karang_anyar.css"

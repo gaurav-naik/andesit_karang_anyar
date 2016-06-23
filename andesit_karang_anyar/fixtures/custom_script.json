@@ -2,6 +2,15 @@
  {
   "docstatus": 0, 
   "doctype": "Custom Script", 
+  "dt": "Weigh Bridge Weighing", 
+  "modified": "2016-06-17 14:13:39.810887", 
+  "name": "Weigh Bridge Weighing-Client", 
+  "script": "cur_frm.add_fetch(\"wb_vehicle_tare_weight\", \"wbw_vehicle_tare_weight\", \"wbw_vehicle_tare_weight\")", 
+  "script_type": "Client"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Custom Script", 
   "dt": "Sales Order", 
   "modified": "2016-06-20 23:35:47.623919", 
   "name": "Sales Order-Client", 
