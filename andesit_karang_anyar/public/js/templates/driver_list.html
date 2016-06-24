@@ -9,8 +9,8 @@
                     {% if(driver_list[i].wb_driver_photo != null) { %}        
                         <img src="{%= encodeURIComponent(driver_list[i].wb_driver_photo)%}" class="img-responsive img-thumbnail center-block" style="height:180px;" />
                     {% } else { %}
-                        <div class="thumbnail missing-image" style="height:180px;">
-                            <span class="octicon octicon-circle-slash" style="width: 100%"></span>
+                        <div class="center-block" style="height:180px; background-color: #eee;">
+                            <span class="octicon octicon-circle-slash" style="width: 100%;"></span>
                         </div> 
                     {% } %}
                 </div>
@@ -25,3 +25,13 @@
     </div>
 {% } %}
 </div>
+<style type="text/css">
+    .center-block span {
+        margin-top: 75%;
+    }
+    @media screen and (min-width: 320px) {
+        .center-block span {
+            margin-top: 45%;
+        }
+    }
+</style>
