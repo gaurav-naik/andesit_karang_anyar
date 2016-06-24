@@ -5,9 +5,9 @@
     <div class="col-md-3 col-xs-6">
         <div class="thumbnail">
             <a href="#Form/Driver/{%= encodeURIComponent(driver_list[i].wb_driver_licence)%}">
-                <div style="text-align: center; max-height: 180px; overflow:hidden;">
+                <div style="text-align: center; max-height: 180px; margin-left: 2px; overflow:hidden;">
                     {% if(driver_list[i].wb_driver_photo != null) { %}        
-                        <img src="{%= encodeURIComponent(driver_list[i].wb_driver_photo)%}" class="img-responsive img-thumbnail" style="height:180px;" />
+                        <img src="{%= encodeURIComponent(driver_list[i].wb_driver_photo)%}" class="img-responsive img-thumbnail center-block" style="height:180px;" />
                     {% } else { %}
                         <div class="center-block" style="height:180px; background-color: #eee;">
                             <span class="octicon octicon-circle-slash" style="width: 100%;"></span>
