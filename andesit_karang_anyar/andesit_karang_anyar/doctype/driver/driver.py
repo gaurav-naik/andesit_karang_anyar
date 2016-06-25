@@ -12,12 +12,7 @@ from frappe.model.document import Document
 class Driver(Document):
 	def validate(self):
 		self.validate_licence_number()
-		self.validate_customer_supplier()
 
 	def validate_licence_number(self):
 		if len(self.wb_driver_licence) < 12:
 			frappe.throw(_("License Number is not too short. It should be 12 digit format."))
-
-	def validate_customer_supplier(self):
-		if not self.wb_customer and not self.wb_supplier:
-			frappe.throw(_("Either Customer or Supplier is mandatory"))
