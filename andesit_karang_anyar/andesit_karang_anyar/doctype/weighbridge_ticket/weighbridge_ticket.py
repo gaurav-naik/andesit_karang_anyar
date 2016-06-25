@@ -12,6 +12,7 @@ class WeighbridgeTicket(Document):
 		self.validate_outgoing()
 		self.validate_incoming()
 
+	#When Vehicle is Empty and loaded at WeighBridge.  calculate net_weight = Tare Weight - Gross Weight.
 	def validate_outgoing(self):
 		if self.wbt_load_direction=="Outgoing":
 			tolerance = (1.0*self.wbt_vehicle_tare_weight/100)*10
@@ -19,7 +20,9 @@ class WeighbridgeTicket(Document):
 				net_weight = self.wbt_first_weighing - self.wbt_second_weighing
 			else:
 				frappe.throw(_("Tare Weight MisMatch"))
-				
+	
+
+	#When Vehicle is loaded and unload at WeighBridge. calculate net_weight = Gross Weight — Tare Weight.		
 	def validate_incoming(self):
 		if self.wbt_load_direction=="Incoming":
 			tolerance =  (1.0*self.wbt_vehicle_tare_weight/100)*10
