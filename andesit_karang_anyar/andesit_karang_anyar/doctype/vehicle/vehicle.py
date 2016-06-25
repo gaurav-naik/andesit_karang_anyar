@@ -11,5 +11,5 @@ from andesit_karang_anyar.utilities.driverlist import load_drivers
 class Vehicle(Document):
 
 	def onload(self):
-		load_drivers(self, "wb_customer")
+		load_drivers(self)
 		
