@@ -15,6 +15,6 @@ frappe.ui.form.on('Weighbridge Ticket', {
 		if (frm.doc.wbt_first_weighing && frm.doc.wbt_second_weighing){
 			frm.set_value("wbt_net_weight", Math.abs(frm.doc.wbt_first_weighing - frm.doc.wbt_second_weighing));
 		} 
-	}
+	},
 	
 });
