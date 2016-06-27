@@ -11,7 +11,7 @@ class WeighbridgeTicket(Document):
 	def validate(self):
 		self.validate_outgoing()
 		self.validate_incoming()
-		self.validate_weight()
+		#self.validate_weight()
 
 	#When Vehicle is Empty and loaded at WeighBridge.  calculate net_weight = Tare Weight - Gross Weight.
 	def validate_outgoing(self):

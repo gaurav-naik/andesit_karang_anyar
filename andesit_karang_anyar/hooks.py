@@ -95,7 +95,7 @@ app_include_js = "/assets/js/aka.min.js"
 # 	"weekly": [
 # 		"andesit_karang_anyar.tasks.weekly"
 # 	]
-# 	"monthly": [
+# 	"monthly": [, 
 # 		"andesit_karang_anyar.tasks.monthly"
 # 	]
 # }
@@ -112,4 +112,10 @@ app_include_js = "/assets/js/aka.min.js"
 # 	"frappe.desk.doctype.event.event.get_events": "andesit_karang_anyar.event.get_events"
 # }
 
-fixtures = ["Custom Script", "Custom Field", "Property Setter"]
+fixtures = ["Custom Script", 
+			"Custom Field", 
+			"Property Setter",  
+			{"dt": "Workflow", "filters": [["document_type", "=", "Weighbridge Ticket"]]},
+			{"dt": "Workflow State", "filters": [["name", "in", ["First Weighing", "Second Weighing", "Weighing Complete"]]]},
+			{"dt": "Workflow Action", "filters": [["name", "=", "Second Weighing"]]}
+			]
