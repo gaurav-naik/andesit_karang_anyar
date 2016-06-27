@@ -9,13 +9,7 @@ from frappe import _
 from andesit_karang_anyar.utilities.driverlist import load_drivers
 
 class Vehicle(Document):
-	def validate(self):
-		self.validate_customer_supplier()
-
-	def validate_customer_supplier(self):
-		if not self.wb_customer and not self.wb_supplier:
-			frappe.throw(_("Either Customer or Supplier is mandatory"))
 
 	def onload(self):
-		load_drivers(self, "wb_customer")
+		load_drivers(self)
 		
