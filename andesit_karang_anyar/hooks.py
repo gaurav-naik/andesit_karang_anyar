@@ -115,6 +115,7 @@ app_include_js = "/assets/js/aka.min.js"
 fixtures = ["Custom Script", 
 			"Custom Field", 
 			"Property Setter",  
+			{"dt": "UOM", "filters": [["name", "=", "Tons"]]},
 			{"dt": "Workflow", "filters": [["document_type", "=", "Weighbridge Ticket"]]},
 			{"dt": "Workflow State", "filters": [["name", "in", ["First Weighing", "Second Weighing", "Weighing Complete"]]]},
 			{"dt": "Workflow Action", "filters": [["name", "=", "Second Weighing"]]}
