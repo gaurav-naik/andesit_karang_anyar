@@ -76,9 +76,13 @@ class WeighbridgeTicket(Document):
 
 
 	#Create Customer order and sales order automatically once Weighing is Complete.
+	# def before_update_after_submit(self):
+	# 	self.net_weight = abs(self.wbt_first_weighing - self.wbt_second_weighing)
+
 	def on_update_after_submit(self):
-		
 		if self.workflow_state == "Weighing Complete":
+
+		
 			#Validate doesnt seem to fire after submitting.
 			if ((not self.wbt_second_weighing) or (self.wbt_second_weighing <= 0.0)):
 				frappe.throw(_("Second weighing cannot be left blank or zero."))
@@ -105,13 +109,13 @@ class WeighbridgeTicket(Document):
 					"conversion_factor": 1.0,
 				})
 
-				so.submit()
+				so.save()
 
-				frappe.msgprint("Sales Order %s created successfully." % (so.name))
-				from erpnext.selling.doctype.sales_order.sales_order import make_delivery_note
-				dn = make_delivery_note(so.name)
-				dn.save()
-				frappe.db.commit()
+				# frappe.msgprint("Sales Order %s created successfully." % (so.name))
+				# from erpnext.selling.doctype.sales_order.sales_order import make_delivery_note
+				# dn = make_delivery_note(so.name)
+				# dn.save()
+				# frappe.db.commit()
 
 			elif self.party_type == "Supplier" and self.supplier:
 				po = frappe.new_doc("Purchase Order")
@@ -121,7 +125,7 @@ class WeighbridgeTicket(Document):
 				po.company = "Andesit Karang Anyar"
 				po.supplier = self.supplier
 				po.is_subcontracted = "No"
-				#po.currency = args.currency or frappe.db.get_value("Company", po.company, "default_currency")
+				
 				po.conversion_factor = 1
 
 				po.append("items", {
@@ -132,9 +136,12 @@ class WeighbridgeTicket(Document):
 					"schedule_date": add_days(nowdate(), 1)
 				})
 				
-				po.insert()
+				po.save()
 
-				frappe.msgprint("Purchase Order %s created successfully." % (po.name))
+				# frappe.msgprint("Purchase Order %s created successfully." % (po.name))
 
-				return po
-				
+				# from erpnext.buying.doctype.purchase_order.purchase_order import make_purchase_receipt
+
+				# pr = make_purchase_receipt(po.name)
+				# pr.save()
+				# frappe.db.commit()
