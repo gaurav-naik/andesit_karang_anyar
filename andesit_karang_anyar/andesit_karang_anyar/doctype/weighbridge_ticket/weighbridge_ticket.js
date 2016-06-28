@@ -11,19 +11,25 @@ frappe.ui.form.on('Weighbridge Ticket', {
 		}
 	},
 
-	wbt_second_weighing: function(frm){
-		if (frm.doc.wbt_first_weighing && frm.doc.wbt_second_weighing){
-			frm.set_value("wbt_net_weight", Math.abs(frm.doc.wbt_first_weighing - frm.doc.wbt_second_weighing));
-		} 
-	},
+	// wbt_second_weighing: function(frm){
+	// 	if (frm.doc.wbt_first_weighing && frm.doc.wbt_second_weighing){
+	// 		frm.set_value("wbt_net_weight", Math.abs(frm.doc.wbt_first_weighing - frm.doc.wbt_second_weighing));
+	// 	} 
+	// },
 	
 	refresh: function(frm) {
 		set_second_weighing_visibility(frm);
-		if (frm.doc.wbt_time_in === frm.doc.wbt_time_out) {
-			frm.set_value("wbt_time_out", frappe.datetime.now_time());	
-		}
-	}
+	},
 
+	wbt_vehicle: function(frm) {
+		//cur_frm.add_fetch("wbt_vehicle", "wb_vehicle_tare_weight", "wbt_vehicle_tare_weight");
+		frappe.model.with_doc("Vehicle", frm.doc.wbt_vehicle, function() { 
+			var v = frappe.model.get_doc("Vehicle", frm.doc.wbt_vehicle);
+			if (v.wb_vehicle_tare_weight != frm.doc.wb_vehicle_tare_weight) {
+				frm.set_value("wbt_vehicle_tare_weight", v.wb_vehicle_tare_weight);
+			}
+		});
+	}
 });
 
 //Hide second weighing fields when doc is local or draft. Shown and enabled on submit.
