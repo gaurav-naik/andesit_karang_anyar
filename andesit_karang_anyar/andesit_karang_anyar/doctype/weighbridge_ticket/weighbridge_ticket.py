@@ -10,15 +10,11 @@ from frappe import utils
 from frappe.utils import add_days, nowdate
 
 class WeighbridgeTicket(Document):
-	#def validate(self):
-		#self.validate_basic()
-		#self.validate_outgoing()
-		#self.validate_incoming()
+	def validate(self):
+		self.validate_basic()
+		self.validate_outgoing()
+		self.validate_incoming()
 		#self.validate_weight()
-	
-	#def after_insert(self):
-		#self.save()
-		#frappe.msgprint("%s, %s" % (self.wbt_load_direction, self.workflow_state))
 
 	#When Vehicle is Empty and loaded at WeighBridge.  calculate net_weight = Tare Weight - Gross Weight.
 	def validate_outgoing(self):
@@ -89,27 +85,27 @@ class WeighbridgeTicket(Document):
 
 
 			#Create a sales order if customer is selected.
-			if self.party_type == "Customer" and self.customer :
-				so = frappe.new_doc("Sales Order")
+			#if self.party_type == "Customer" and self.customer :
+				# so = frappe.new_doc("Sales Order")
 				
-				so.transaction_date = frappe.utils.today()
+				# so.transaction_date = frappe.utils.today()
 
-				so.company = "Andesit Karang Anyar"
-				so.customer = self.customer
-				so.delivery_date = add_days(so.transaction_date, 10)
-				so.currency = "IDR"
+				# so.company = "Andesit Karang Anyar"
+				# so.customer = self.customer
+				# so.delivery_date = add_days(so.transaction_date, 10)
+				# so.currency = "IDR"
 				
-				so.selling_price_list = "Standard Selling" 
+				# so.selling_price_list = "Standard Selling" 
 
-				so.append("items", {
-					"item_code": "Rock Aggregate",
-					"warehouse": "Stores - AKA",
-					"qty": self.wbt_net_weight,
-					"rate": 550,
-					"conversion_factor": 1.0,
-				})
+				# so.append("items", {
+				# 	"item_code": "Rock Aggregate",
+				# 	"warehouse": "Stores - AKA",
+				# 	"qty": self.wbt_net_weight,
+				# 	"rate": 550,
+				# 	"conversion_factor": 1.0,
+				# })
 
-				so.save()
+				# so.save()
 
 				# frappe.msgprint("Sales Order %s created successfully." % (so.name))
 				# from erpnext.selling.doctype.sales_order.sales_order import make_delivery_note
@@ -117,26 +113,26 @@ class WeighbridgeTicket(Document):
 				# dn.save()
 				# frappe.db.commit()
 
-			elif self.party_type == "Supplier" and self.supplier:
-				po = frappe.new_doc("Purchase Order")
+			# elif self.party_type == "Supplier" and self.supplier:
+			# 	po = frappe.new_doc("Purchase Order")
 
-				po.transaction_date = frappe.utils.today()
+			# 	po.transaction_date = frappe.utils.today()
 
-				po.company = "Andesit Karang Anyar"
-				po.supplier = self.supplier
-				po.is_subcontracted = "No"
+			# 	po.company = "Andesit Karang Anyar"
+			# 	po.supplier = self.supplier
+			# 	po.is_subcontracted = "No"
 				
-				po.conversion_factor = 1
+			# 	po.conversion_factor = 1
 
-				po.append("items", {
-					"item_code": "Rock Aggregate",
-					"warehouse": "Stores - AKA",
-					"qty": self.wbt_net_weight,
-					"rate": 550,
-					"schedule_date": add_days(nowdate(), 1)
-				})
+			# 	po.append("items", {
+			# 		"item_code": "Rock Aggregate",
+			# 		"warehouse": "Stores - AKA",
+			# 		"qty": self.wbt_net_weight,
+			# 		"rate": 550,
+			# 		"schedule_date": add_days(nowdate(), 1)
+			# 	})
 				
-				po.save()
+			# 	po.save()
 
 				# frappe.msgprint("Purchase Order %s created successfully." % (po.name))
 
@@ -145,3 +141,66 @@ class WeighbridgeTicket(Document):
 				# pr = make_purchase_receipt(po.name)
 				# pr.save()
 				# frappe.db.commit()
+
+@frappe.whitelist()
+def create_sales_docs(docname):
+	frappe.msgprint("Create Sales Docs called.")
+	# try:
+	# 	wbt = frappe.get_doc("Weighbridge Ticket", wbtname)
+	# except Exception, e:
+	# 	frappe.throw("Weighbridge Ticket '%s' could not be loaded." % (wbtname))
+
+	# #Create a sales order if customer is selected.
+	# so = frappe.new_doc("Sales Order")
+	
+	# so.transaction_date = frappe.utils.today()
+
+	# so.company = "Andesit Karang Anyar"
+	# so.customer = wbt.customer
+	# so.delivery_date = add_days(so.transaction_date, 10)
+	# so.currency = "IDR"
+	
+	# so.selling_price_list = "Standard Selling" 
+
+	# so.append("items", {
+	# 	"item_code": "Rock Aggregate",
+	# 	"warehouse": "Stores - AKA",
+	# 	"qty": wbt.wbt_net_weight,
+	# 	"rate": 550,
+	# 	"conversion_factor": 1.0,
+	# })
+
+	# so.save()
+
+@frappe.whitelist()
+def create_purchase_docs(dn):
+	frappe.msgprint("Create Purchase Docs called.")
+	# try:
+	# 	wbt = frappe.get_doc("Weighbridge Ticket", wbtname)
+	# except Exception, e:
+	# 	frappe.throw("Weighbridge Ticket '%s' could not be loaded." % (wbtname))
+	
+	# po = frappe.new_doc("Purchase Order")
+
+	# po.transaction_date = frappe.utils.today()
+
+	# po.company = "Andesit Karang Anyar"
+	# po.supplier = wbt.supplier
+	# po.is_subcontracted = "No"
+	
+	# po.conversion_factor = 1
+
+	# po.append("items", {
+	# 	"item_code": "Rock Aggregate",
+	# 	"warehouse": "Stores - AKA",
+	# 	"qty": wbt.wbt_net_weight,
+	# 	"rate": 550,
+	# 	"schedule_date": add_days(nowdate(), 1)
+	# })
+
+	# try:
+	# 	po.save()	
+	# except Exception, e:
+	# 	frappe.throw("PO could not be created.")
+	# else:
+	# 	frappe.msgprint("Purchase Order %s created successfully." % (po.name))
