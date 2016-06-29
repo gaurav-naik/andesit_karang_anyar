@@ -36,7 +36,7 @@ frappe.ui.form.on('Weighbridge Ticket', {
 function make_btn_purchase_docs(frm) {
 	frm.add_custom_button(__('Create Purchase Docs'), function(){
 		frappe.call({
-			method: "andesit_karang_anyar.doctype.weighbridge_ticket.weighbridge_ticket.create_purchase_docs",
+			method: "andesit_karang_anyar.andesit_karang_anyar.doctype.weighbridge_ticket.weighbridge_ticket.create_purchase_docs",
 			args: {"docname": frm.doc.name},
 			freeze: true,
 			freeze_message: __("Creating Purchase Docs"),
@@ -55,7 +55,7 @@ function make_btn_sales_docs(frm) {
 	frm.add_custom_button(__('Create Sales Docs'), function(){
 		frappe.call({
 			method: "andesit_karang_anyar.andesit_karang_anyar.doctype.weighbridge_ticket.weighbridge_ticket.create_sales_docs",
-			docname: frm.doc.name,
+			args: {"docname": frm.doc.name},
 			freeze: true,
 			freeze_message: __("Creating Sales Docs"),
 			callback: function(r){

@@ -143,64 +143,88 @@ class WeighbridgeTicket(Document):
 				# frappe.db.commit()
 
 @frappe.whitelist()
-def create_sales_docs(docname):
-	frappe.msgprint("Create Sales Docs called.")
-	# try:
-	# 	wbt = frappe.get_doc("Weighbridge Ticket", wbtname)
-	# except Exception, e:
-	# 	frappe.throw("Weighbridge Ticket '%s' could not be loaded." % (wbtname))
+def create_sales_docs(docname=None):
+	try:
+		wbt = frappe.get_doc("Weighbridge Ticket", docname)
+	except Exception, e:
+		frappe.throw(_("Weighbridge Ticket '%s' could not be loaded." % (docname)))
 
-	# #Create a sales order if customer is selected.
-	# so = frappe.new_doc("Sales Order")
+	#Create a sales order if customer is selected.
+	so = frappe.new_doc("Sales Order")
 	
-	# so.transaction_date = frappe.utils.today()
+	so.transaction_date = frappe.utils.today()
 
-	# so.company = "Andesit Karang Anyar"
-	# so.customer = wbt.customer
-	# so.delivery_date = add_days(so.transaction_date, 10)
-	# so.currency = "IDR"
+	so.company = "Andesit Karang Anyar"
+	so.customer = wbt.customer
+	so.delivery_date = add_days(so.transaction_date, 10)
+	so.currency = "IDR"
 	
-	# so.selling_price_list = "Standard Selling" 
+	so.selling_price_list = "Standard Selling" 
 
-	# so.append("items", {
-	# 	"item_code": "Rock Aggregate",
-	# 	"warehouse": "Stores - AKA",
-	# 	"qty": wbt.wbt_net_weight,
-	# 	"rate": 550,
-	# 	"conversion_factor": 1.0,
-	# })
+	so.append("items", {
+		"item_code": "Rock Aggregate",
+		"warehouse": "Stores - AKA",
+		"qty": wbt.wbt_net_weight,
+		"rate": 550,
+		"conversion_factor": 1.0,
+	})
 
-	# so.save()
+	try:
+		so.submit()
+	except Exception, e:
+		frappe.throw(_("Sales Order was not submitted."))
+	else:
+		frappe.msgprint(_("Sales Order %s created successfully." % (so.name)))
 
+	try:
+		from erpnext.selling.doctype.sales_order.sales_order import make_delivery_note
+		dn = make_delivery_note(so.name)
+		dn.save()
+	except Exception, e:
+		frappe.throw(_("Delivery Note was not created."))
+	else:
+		frappe.msgprint(_("Delivery Note %s created successfully." % (dn.name)))
+		frappe.db.commit()
+	
 @frappe.whitelist()
-def create_purchase_docs(dn):
-	frappe.msgprint("Create Purchase Docs called.")
-	# try:
-	# 	wbt = frappe.get_doc("Weighbridge Ticket", wbtname)
-	# except Exception, e:
-	# 	frappe.throw("Weighbridge Ticket '%s' could not be loaded." % (wbtname))
+def create_purchase_docs(docname=None):
+	try:
+		wbt = frappe.get_doc("Weighbridge Ticket", docname)
+	except Exception, e:
+		frappe.throw(_("Weighbridge Ticket '%s' could not be loaded." % (docname)))
 	
-	# po = frappe.new_doc("Purchase Order")
+	po = frappe.new_doc("Purchase Order")
 
-	# po.transaction_date = frappe.utils.today()
+	po.transaction_date = frappe.utils.today()
 
-	# po.company = "Andesit Karang Anyar"
-	# po.supplier = wbt.supplier
-	# po.is_subcontracted = "No"
+	po.company = "Andesit Karang Anyar"
+	po.supplier = wbt.supplier
+	po.is_subcontracted = "No"
 	
-	# po.conversion_factor = 1
+	po.conversion_factor = 1
 
-	# po.append("items", {
-	# 	"item_code": "Rock Aggregate",
-	# 	"warehouse": "Stores - AKA",
-	# 	"qty": wbt.wbt_net_weight,
-	# 	"rate": 550,
-	# 	"schedule_date": add_days(nowdate(), 1)
-	# })
+	po.append("items", {
+		"item_code": "Rock Aggregate",
+		"warehouse": "Stores - AKA",
+		"qty": wbt.wbt_net_weight,
+		"rate": 400,
+		"schedule_date": add_days(nowdate(), 1)
+	})
 
-	# try:
-	# 	po.save()	
-	# except Exception, e:
-	# 	frappe.throw("PO could not be created.")
-	# else:
-	# 	frappe.msgprint("Purchase Order %s created successfully." % (po.name))
+	try:
+		po.submit()
+	except Exception, e:
+		frappe.throw(_("Purchase Order was not submitted."))
+	else:
+		frappe.msgprint(_("Purchase Order %s created successfully." % (po.name)))
+
+	try:
+		from erpnext.buying.doctype.purchase_order.purchase_order import make_purchase_receipt
+		pr = make_purchase_receipt(po.name)
+		pr.save()
+	except Exception, e:
+		frappe.throw(_("Purchase Receipt was not created."))
+	else:
+		frappe.msgprint(_("Purchase Receipt %s created successfully." % (pr.name)))
+		frappe.db.commit()
+		
