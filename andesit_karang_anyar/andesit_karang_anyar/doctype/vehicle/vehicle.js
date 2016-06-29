@@ -13,3 +13,10 @@ frappe.ui.form.on('Vehicle', {
 		}
 	}
 });
+
+frappe.ui.form.on("Vehicle Driver", "vehicle_driver", function(frm, cdt, cdn) {
+	var vd = locals[cdt][cdn];
+	vd.driver_name = vd.driver.wb_driver_fn + (vd.driver.wb_driver_ln ? " " + vd.driver.wb_driver_ln : "");
+	vd.driver_licence_no = vd.driver.wb_driver_licence;
+	frm.refresh_fields();
+});
