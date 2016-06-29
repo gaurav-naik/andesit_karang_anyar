@@ -191,7 +191,7 @@
    "unique": 0
   }, 
   {
-   "allow_on_submit": 0, 
+   "allow_on_submit": 1, 
    "bold": 0, 
    "collapsible": 0, 
    "fieldname": "wbt_vehicle_tare_weight", 
@@ -680,7 +680,7 @@
  "issingle": 0, 
  "istable": 0, 
  "max_attachments": 0, 
- "modified": "2016-06-27 16:56:17.522061", 
+ "modified": "2016-06-28 22:49:41.729821", 
  "modified_by": "Administrator", 
  "module": "Andesit Karang Anyar", 
  "name": "Weighbridge Ticket", 
