@@ -7,9 +7,11 @@ frappe.ui.form.on('Weighbridge Ticket', {
 	party_type: function(frm){
 		if (frm.doc.party_type==="Customer"){
 			frm.set_value("wbt_load_direction","Outgoing");
+			//Set selling price list
 		} 
 		else if (frm.doc.party_type==="Supplier") {
 			frm.set_value("wbt_load_direction","Incoming");
+			//Set buying price list
 		}
 	},
 
@@ -19,7 +21,7 @@ frappe.ui.form.on('Weighbridge Ticket', {
 		} 
 	},
 	
-	refresh: function(frm) {
+	refresh: function(frm, cdt, cdn) {
 		set_second_weighing_visibility(frm);
 		cur_frm.add_fetch("wbt_vehicle", "wb_vehicle_tare_weight", "wbt_vehicle_tare_weight");
 		if (frm.doc.workflow_state == "Weighing Complete") {
@@ -30,8 +32,24 @@ frappe.ui.form.on('Weighbridge Ticket', {
 			}
 		}
 	},
-
 });
+
+// frappe.ui.form.on("Weighbridge Ticket Item", "item_type", function(frm, cdt, cdn){
+// 	var itemtype = locals[cdt][cdn].item_type;
+// 	if (itemtype == "Charge") {
+// 	 	frappe.meta.get_docfield("Weighbridge Ticket Item", "item", cur_frm.doc.name).reqd = 0;
+// 	 	frappe.meta.get_docfield("Weighbridge Ticket Item", "account", cur_frm.doc.name).reqd = 1;	
+// 	 	frappe.meta.get_docfield("Weighbridge Ticket Item", "rate", cur_frm.doc.name).reqd = 1;
+// 	 	frappe.meta.get_docfield("Weighbridge Ticket Item", "description", cur_frm.doc.name).reqd = 1;
+// 	} else if (itemtype == "Item") {
+// 		//frappe.meta.get_docfield("Weighbridge Ticket Item", "item_type", cur_frm.doc.name).read_only = 1;
+// 	 	frappe.meta.get_docfield("Weighbridge Ticket Item", "item", cur_frm.doc.name).reqd = 1;
+// 	 	frappe.meta.get_docfield("Weighbridge Ticket Item", "account", cur_frm.doc.name).reqd = 0;	
+// 	 	frappe.meta.get_docfield("Weighbridge Ticket Item", "rate", cur_frm.doc.name).reqd = 0;
+// 	 	frappe.meta.get_docfield("Weighbridge Ticket Item", "description", cur_frm.doc.name).reqd = 0;
+// 	}
+// 	refresh_field("items");
+// });
 
 function make_btn_purchase_docs(frm) {
 	frm.add_custom_button(__('Create Purchase Docs'), function(){
@@ -42,13 +60,13 @@ function make_btn_purchase_docs(frm) {
 			freeze_message: __("Creating Purchase Docs"),
 			callback: function(r){
 				if(!r.exc) {
-					frappe.msgprint(__("Purchase Docs created."));
+					//frappe.msgprint(__("Purchase Docs created."));
 				} else {
 					frappe.msgprint(__("Purchase Docs could not be created. <br /> " + r.exc));
 				}
 			}
 		});
-	});
+	}, __("Make"));
 }
 
 function make_btn_sales_docs(frm) {
@@ -60,13 +78,13 @@ function make_btn_sales_docs(frm) {
 			freeze_message: __("Creating Sales Docs"),
 			callback: function(r){
 				if(!r.exc) {
-					frappe.msgprint(__("Sales Docs created."));
+					//frappe.msgprint(__("Sales Docs created."));
 				} else {
 					frappe.msgprint(__("Sales Docs could not be created. <br /> " + r.exc));
 				}
 			}
 		});
-	});
+	}, __("Make"));
 }
 
 
@@ -85,3 +103,4 @@ function set_second_weighing_visibility(frm) {
 	frm.set_df_property("wbt_time_out", "hidden", condition_hidden);
 	
 }
+cur_frm.add_fetch("company", "default_currency", "company_currency");

@@ -8,6 +8,7 @@ from frappe.model.document import Document
 from frappe import _
 from frappe import utils
 from frappe.utils import add_days, nowdate
+from andesit_karang_anyar.andesit_karang_anyar.doctype.aka_weighbridge_management_settings.aka_weighbridge_management_settings import get_aka_wb_settings
 
 class WeighbridgeTicket(Document):
 	def validate(self):
@@ -15,7 +16,6 @@ class WeighbridgeTicket(Document):
 		self.validate_outgoing()
 		self.validate_incoming()
 		self.validate_items()
-		#self.validate_weight()
 
 	#When Vehicle is Empty and loaded at WeighBridge.  calculate net_weight = Tare Weight - Gross Weight.
 	def validate_outgoing(self):
@@ -61,20 +61,30 @@ class WeighbridgeTicket(Document):
 			frappe.throw(_("First weighing cannot be left blank or zero."))
 
 
-	def validate_items(self):
-		
-		#WBT must have at least one item.
-		if len(self.items) == 0:
-			frappe.throw(_("Weighbridge Ticket must have at least one item."))
-
-		#WBT cannot have more than one item.
+	def validate_items(self):		
 		item_list = []
 		for itm in self.items:
 			if itm.item_type == "Item":
 				item_list.append(itm.item_type)
+				if not itm.item:
+					frappe.throw(_("Items Table ROW # {0} Please select Item".format(itm.idx)))
+			elif itm.item_type == "Charge":
+				if not itm.account:
+					frappe.throw(_("Items Table ROW # {0} Please select Account".format(itm.idx)))
+				elif not itm.description:
+					frappe.throw(_("Items Table ROW # {0} Please fill in Description".format(itm.idx)))
+				elif not itm.rate or itm.rate <= 0:
+					frappe.throw(_("Items Table ROW # {0} Please enter valid rate".format(itm.idx)))
 
+
+		#WBT must have at least one items
+		if len(item_list) == 0:
+		 	frappe.throw(_("Weighbridge Ticket must have at least one item."))	
+
+		#WBT cannot have more than one item.
 		if len(item_list)!= len(set(item_list)):
 			frappe.throw(_("Weighbridge Ticket cannot have more than one item."))
+
 
 	# #When Vehicle is loaded and unload at WeighBridge. calculate net_weight = Gross Weight — Tare Weight.		
 	# def validate_incoming(self):
@@ -102,26 +112,23 @@ class WeighbridgeTicket(Document):
 
 @frappe.whitelist()
 def create_sales_docs(docname):
-
 	so = None
 
-	try:
-		so = frappe.get_doc("Sales Order", {"weighbridge_ticket": docname})	
-	except Exception, e:
-		so = create_so(docname)
-	else:
-		frappe.msgprint(_("Sales Order '%s' already created against this Weighbridge Ticket" % (so.name)))			
+	soname = frappe.db.get_value("Sales Order", {"weighbridge_ticket":docname}, "name")
 
+	if soname:
+		frappe.msgprint(_("Sales Order '%s' already created against this Weighbridge Ticket" % (soname)))			
+	else:
+		so = create_so(docname)
 
 	if so:
-		try:
-			dn = frappe.get_doc("Delivery Note", {"weighbridge_ticket": docname})
-		except Exception, e:
-			dn = create_dn_for_so(docname, so)
+		dnname = frappe.db.get_value("Delivery Note", {"weighbridge_ticket":docname}, "name")
+
+		if dnname:
+			frappe.msgprint(_("Delivery Note '%s' already created against this Weighbridge Ticket." % (dnname)))
 		else:
-			frappe.msgprint(_("Delivery Note '%s' already created against this Weighbridge Ticket." % (dn.name)))
-
-
+			dn = create_dn_for_so(docname, so)
+			
 @frappe.whitelist()
 def create_so(wbtname):
 	wbt = None
@@ -135,36 +142,55 @@ def create_so(wbtname):
 	so = frappe.new_doc("Sales Order")	
 	so.transaction_date = frappe.utils.today()
 
-	so.company = "Andesit Karang Anyar"
+	so.company = wbt.company
 	so.customer = wbt.customer
 	so.delivery_date = add_days(so.transaction_date, 10)
-	so.currency = "IDR"
+	so.currency = wbt.company_currency
 	
 	so.selling_price_list = "Standard Selling" 
 	so.weighbridge_ticket = wbtname
 
-	frappe.msgprint(so.weighbridge_ticket)
+	#frappe.msgprint(so.weighbridge_ticket)
 	if so.weighbridge_ticket == "": 
 		frappe.throw("WBT was not set for SO")
 
+	#Get Warehouse from AKA_WB_Settings
+	akas = get_aka_wb_settings(wbt.company)
+	if not akas:
+		frappe.throw("Please ensure AKA Weighbridge Management Settings has valid data.")
+	wh = akas["warehouse"]
+
+	item_code = ""
+	item_price = None
 
 	for itm in wbt.items:
+
 		if itm.item_type == "Item":
-			so.append("items", {
-				"item_code": itm.item,
-				"warehouse": "Stores - AKA",
-				"qty": wbt.wbt_net_weight,
-				"rate": 550,
-				"conversion_factor": 1.0,
-			})	
-		elif itm.item_type == "Charge":
-			so.append("taxes", {
-				"doctype": "Sales Taxes and Charges",
-				"charge_type": "Actual",
-				"account_head": itm.account,
-				"description": itm.description,
-				"tax_amount": itm.rate,
-			})
+
+			item_price = frappe.db.get_value("Item Price",
+					{	"price_list": wbt.selling_price_list,
+						"item_code": itm.item
+					}, 	"price_list_rate")
+
+			if (not item_price) or (item_price == 0.0):
+				frappe.throw(_("Please set price for item '%s' in Price List '%s'" % (itm.item, wbt.selling_price_list)))
+	 
+			if itm.item_type == "Item":
+				so.append("items", {
+					"item_code": itm.item,
+					"warehouse": wh,
+					"qty": wbt.wbt_net_weight,
+					"rate": item_price,
+					"conversion_factor": 1.0,
+				})	
+			elif itm.item_type == "Charge":
+				so.append("taxes", {
+					"doctype": "Sales Taxes and Charges",
+					"charge_type": "Actual",
+					"account_head": itm.account,
+					"description": itm.description,
+					"tax_amount": itm.rate,
+				})
 
 	try:
 		so.submit()
@@ -182,38 +208,31 @@ def create_dn_for_so(wbtname, so):
 	dn = make_delivery_note(so.name)
 	dn.weighbridge_ticket = wbtname
 
-	try:
-		dn.save()
-	except Exception, e:
-		frappe.msgprint(_("Delivery Note was not saved. <br/> %s" % (e)))
-	else:
-		frappe.db.commit()
-		frappe.msgprint(_("Delivery Note %s created successfully." % (dn.name)))
+	dn.save()
+	frappe.db.commit()
+	frappe.msgprint(_("Delivery Note %s created successfully." % (dn.name)))
 
 	return dn
-
-#---------------	
 	
 @frappe.whitelist()
 def create_purchase_docs(docname=None):
 	po = None
 
-	try:
-		po = frappe.get_doc("Purchase Order", {"weighbridge_ticket": docname})	
-	except Exception, e:
-		po = create_po(docname)
+	poname = frappe.db.get_value("Purchase Order", {"weighbridge_ticket":docname}, "name")
+
+	if poname:
+		frappe.msgprint(_("Purchase Order '%s' already created against this Weighbridge Ticket" % (poname)))			
 	else:
-		frappe.msgprint(_("Purchase Order '%s' already created against this Weighbridge Ticket" % (po.name)))			
+		po = create_po(docname)
 
 	if po:
-		try:
-			pr = frappe.get_doc("Purchase Receipt", {"weighbridge_ticket": docname})
-		except Exception, e:
-			pr = create_pr_for_po(docname, po)
+		prname =  frappe.db.get_value("Purchase Receipt", {"weighbridge_ticket":docname}, "name")
+
+		if prname:
+			frappe.msgprint(_("Purchase Receipt '%s' already created against this Weighbridge Ticket." % (prname)))
 		else:
-	 		frappe.msgprint(_("Purchase Receipt '%s' already created against this Weighbridge Ticket." % (pr.name)))
-
-
+			pr = create_pr_for_po(docname, po)
+		
 @frappe.whitelist()
 def create_po(wbtname):
 	wbt = None
@@ -226,29 +245,51 @@ def create_po(wbtname):
 	po = frappe.new_doc("Purchase Order")
 	po.transaction_date = frappe.utils.today()
 
-	po.company = "Andesit Karang Anyar"
+	po.company = wbt.company
 	po.supplier = wbt.supplier
 	po.is_subcontracted = "No"
 	po.conversion_factor = 1
 	po.weighbridge_ticket = wbtname
 
+	#Get Warehouse from AKA_WB_Settings
+	akas = get_aka_wb_settings(wbt.company)
+	if not akas:
+		frappe.throw("Please ensure AKA Weighbridge Management Settings has valid data.")
+	wh = akas["warehouse"]
+
+	item_price = None
+
 	for itm in wbt.items:
+
 		if itm.item_type == "Item":
-			po.append("items", {
-				"item_code": itm.item,
-				"warehouse": "Stores - AKA",
-				"qty": wbt.wbt_net_weight,
-				"rate": 400,
-				"schedule_date": add_days(nowdate(), 1)
-			})
-		elif itm.item_type == "Charge":
-			po.append("taxes", {
-				"doctype": "Sales Taxes and Charges",
-				"charge_type": "Actual",
-				"account_head": itm.account,
-				"description": itm.description,
-				"tax_amount": itm.rate,
-			})
+
+			#Fetch item price to append in PO items
+			item_price = frappe.db.get_value("Item Price",
+					{
+						"price_list": wbt.buying_price_list,
+						"item_code": itm.item
+					}, "price_list_rate")
+
+			if (not item_price) or (item_price == 0.0):
+				frappe.throw(_("Please set price for item '%s' in Price List '%s'" % (itm.item, wbt.buying_price_list)))
+
+
+			if itm.item_type == "Item":
+				po.append("items", {
+					"item_code": itm.item,
+					"warehouse": wh,
+					"qty": wbt.wbt_net_weight,
+					"rate": item_price,
+					"schedule_date": add_days(nowdate(), 1)
+				})
+			elif itm.item_type == "Charge":
+				po.append("taxes", {
+					"doctype": "Sales Taxes and Charges",
+					"charge_type": "Actual",
+					"account_head": itm.account,
+					"description": itm.description,
+					"tax_amount": itm.rate,
+				})
 
 	try:
 		po.submit()
@@ -267,10 +308,8 @@ def create_pr_for_po(wbtname, po):
 	pr = make_purchase_receipt(po.name)
 	pr.weighbridge_ticket = wbtname
 
-	try:	
-		pr.save()
-	except Exception, e:
-		frappe.throw(_("Purchase Receipt was not created. <br/> %s" % (e)))
-	else:
-		frappe.msgprint(_("Purchase Receipt %s created successfully." % (pr.name)))
-		frappe.db.commit()
+	pr.save()
+	frappe.db.commit()
+	frappe.msgprint(_("Purchase Receipt %s created successfully." % (pr.name)))
+
+	return pr
