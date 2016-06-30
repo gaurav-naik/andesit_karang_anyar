@@ -110,27 +110,46 @@ class WeighbridgeTicket(Document):
 #SALES DOCS ------
 
 
-@frappe.whitelist()
-def create_sales_docs(docname):
-	so = None
+# @frappe.whitelist()
+# def create_sales_docs(docname):
+# 	so = None
 
-	soname = frappe.db.get_value("Sales Order", {"weighbridge_ticket":docname}, "name")
+# 	soname = frappe.db.get_value("Sales Order", {"weighbridge_ticket":docname}, "name")
 
-	if soname:
-		frappe.msgprint(_("Sales Order '%s' already created against this Weighbridge Ticket" % (soname)))			
-	else:
-		so = create_so(docname)
+# 	if soname:
+# 		frappe.msgprint(_("Sales Order '%s' already created against this Weighbridge Ticket" % (soname)))			
+# 	else:
+# 		so = create_so(docname)
 
-	if so:
-		dnname = frappe.db.get_value("Delivery Note", {"weighbridge_ticket":docname}, "name")
+# 	if so:
+# 		dnname = frappe.db.get_value("Delivery Note", {"weighbridge_ticket":docname}, "name")
 
-		if dnname:
-			frappe.msgprint(_("Delivery Note '%s' already created against this Weighbridge Ticket." % (dnname)))
-		else:
-			dn = create_dn_for_so(docname, so)
-			
-@frappe.whitelist()
-def create_so(wbtname):
+# 		if dnname:
+# 			frappe.msgprint(_("Delivery Note '%s' already created against this Weighbridge Ticket." % (dnname)))
+# 		else:
+# 			dn = create_dn_for_so(docname, so)
+
+# @frappe.whitelist()
+# def create_purchase_docs(docname=None):
+# 	po = None
+
+# 	poname = frappe.db.get_value("Purchase Order", {"weighbridge_ticket":docname}, "name")
+
+# 	if poname:
+# 		frappe.msgprint(_("Purchase Order '%s' already created against this Weighbridge Ticket" % (poname)))			
+# 	else:
+# 		po = create_po(docname)
+
+# 	if po:
+# 		prname =  frappe.db.get_value("Purchase Receipt", {"weighbridge_ticket":docname}, "name")
+
+# 		if prname:
+# 			frappe.msgprint(_("Purchase Receipt '%s' already created against this Weighbridge Ticket." % (prname)))
+# 		else:
+# 			pr = create_pr_for_po(docname, po)
+	
+#HELPERS		
+def create_so(wbtname=None):
 	wbt = None
 
 	try:
@@ -201,9 +220,7 @@ def create_so(wbtname):
 
 	return so
 
-@frappe.whitelist()
 def create_dn_for_so(wbtname, so):
-	#Make a DN from the SO if the DN doesn't already exist.
 	from erpnext.selling.doctype.sales_order.sales_order import make_delivery_note
 	dn = make_delivery_note(so.name)
 	dn.weighbridge_ticket = wbtname
@@ -213,27 +230,18 @@ def create_dn_for_so(wbtname, so):
 	frappe.msgprint(_("Delivery Note %s created successfully." % (dn.name)))
 
 	return dn
-	
-@frappe.whitelist()
-def create_purchase_docs(docname=None):
-	po = None
 
-	poname = frappe.db.get_value("Purchase Order", {"weighbridge_ticket":docname}, "name")
+def create_si_for_so(wbtname, so):
+	from erpnext.selling.doctype.sales_order.sales_order import make_sales_invoice
+	si = make_sales_invoice(so.name)
+	si.weighbridge_ticket = wbtname
 
-	if poname:
-		frappe.msgprint(_("Purchase Order '%s' already created against this Weighbridge Ticket" % (poname)))			
-	else:
-		po = create_po(docname)
+	si.save()
+	frappe.db.commit()
+	frappe.msgprint(_("Sales Invoice %s created successfully." % (si.name)))
 
-	if po:
-		prname =  frappe.db.get_value("Purchase Receipt", {"weighbridge_ticket":docname}, "name")
-
-		if prname:
-			frappe.msgprint(_("Purchase Receipt '%s' already created against this Weighbridge Ticket." % (prname)))
-		else:
-			pr = create_pr_for_po(docname, po)
-		
-@frappe.whitelist()
+	return si
+			
 def create_po(wbtname):
 	wbt = None
 
@@ -300,10 +308,7 @@ def create_po(wbtname):
 
 	return po
 	
-@frappe.whitelist()
 def create_pr_for_po(wbtname, po):
-	pr = None
-
 	from erpnext.buying.doctype.purchase_order.purchase_order import make_purchase_receipt
 	pr = make_purchase_receipt(po.name)
 	pr.weighbridge_ticket = wbtname
@@ -313,3 +318,94 @@ def create_pr_for_po(wbtname, po):
 	frappe.msgprint(_("Purchase Receipt %s created successfully." % (pr.name)))
 
 	return pr
+
+def create_pi_for_po(wbtname, po):
+	from erpnext.buying.doctype.purchase_order.purchase_order import make_purchase_invoice
+	pi = make_purchase_invoice(po.name)
+	pi.weighbridge_ticket = wbtname
+
+	pi.save()
+	frappe.db.commit()
+	frappe.msgprint(_("Purchase Invoice %s created successfully." % (pi.name)))
+
+	return pi
+
+#Returns SO against WBT if found. If not found, SO is created and returned.
+def check_create_so(wbtname):
+	so = None
+
+	soname = frappe.db.get_value("Sales Order", {"weighbridge_ticket":wbtname}, "name")
+
+	if soname:
+		so = frappe.get_doc("Sales Order", soname)
+		frappe.msgprint(_("Sales Order '%s' already created against this Weighbridge Ticket" % (soname)))			
+	else:
+		so = create_so(wbtname)
+
+	return so
+
+def check_create_po(wbtname):
+	po = None
+
+	poname = frappe.db.get_value("Purchase Order", {"weighbridge_ticket":wbtname}, "name")
+
+	if poname:
+		po = frappe.get_doc("Purchase Order", poname)
+		frappe.msgprint(_("Purchase Order '%s' already created against this Weighbridge Ticket" % (poname)))			
+	else:
+		po = create_po(wbtname)
+
+	return po
+#~HELPERS
+
+#Sales Docs
+@frappe.whitelist()
+def check_create_dn(wbtname=None):
+	so = check_create_so(wbtname)
+
+	if so:
+		dnname = frappe.db.get_value("Delivery Note", {"weighbridge_ticket":wbtname}, "name")
+
+		if dnname:
+			frappe.msgprint(_("Delivery Note '%s' already created against this Weighbridge Ticket." % (dnname)))
+		else:
+			dn = create_dn_for_so(wbtname, so)
+
+@frappe.whitelist()
+def check_create_si(wbtname=None):
+	so = check_create_so(wbtname)
+
+	if so:
+		siname = frappe.db.get_value("Sales Invoice", {"weighbridge_ticket":wbtname}, "name")
+
+		if siname:
+			frappe.msgprint(_("Sales Invoice '%s' already created against this Weighbridge Ticket." % (siname)))
+		else:
+			si = create_si_for_so(wbtname, so)	
+#~SALES DOCS
+
+#Purchase Docs
+@frappe.whitelist()
+def check_create_pr(wbtname=None):
+	po = check_create_po(wbtname)
+
+	if po:
+		prname = frappe.db.get_value("Purchase Receipt", {"weighbridge_ticket":wbtname}, "name")
+
+		if prname:
+			frappe.msgprint(_("Purchase Receipt '%s' already created against this Weighbridge Ticket." % (prname)))
+		else:
+			pr = create_pr_for_po(wbtname, po)
+
+def check_create_pi(wbtname=None):
+	po = check_create_po(wbtname)
+
+	if po:
+		piname = frappe.db.get_value("Purchase Invoice", {"weighbridge_ticket":wbtname}, "name")
+
+		if piname:
+			frappe.msgprint(_("Purchase Invoice '%s' already created against this Weighbridge Ticket." % (piname)))
+		else:
+			pi = create_pi_for_po(wbtname, po)
+
+#~Purchase Docs
