@@ -194,22 +194,23 @@ def create_so(wbtname=None):
 			if (not item_price) or (item_price == 0.0):
 				frappe.throw(_("Please set price for item '%s' in Price List '%s'" % (itm.item, wbt.selling_price_list)))
 	 
-			if itm.item_type == "Item":
-				so.append("items", {
-					"item_code": itm.item,
-					"warehouse": wh,
-					"qty": wbt.wbt_net_weight,
-					"rate": item_price,
-					"conversion_factor": 1.0,
-				})	
-			elif itm.item_type == "Charge":
-				so.append("taxes", {
-					"doctype": "Sales Taxes and Charges",
-					"charge_type": "Actual",
-					"account_head": itm.account,
-					"description": itm.description,
-					"tax_amount": itm.rate,
-				})
+	
+			so.append("items", {
+				"item_code": itm.item,
+				"warehouse": wh,
+				"qty": wbt.wbt_net_weight,
+				"rate": item_price,
+				"conversion_factor": 1.0
+			})	
+		
+		elif itm.item_type == "Charge":
+
+			so.append("taxes", {
+				"charge_type": "Actual",
+				"account_head": itm.account,
+				"description": itm.description,
+				"tax_amount": itm.rate
+			})
 
 	try:
 		so.submit()
@@ -280,24 +281,22 @@ def create_po(wbtname):
 
 			if (not item_price) or (item_price == 0.0):
 				frappe.throw(_("Please set price for item '%s' in Price List '%s'" % (itm.item, wbt.buying_price_list)))
+		
+			po.append("items", {
+				"item_code": itm.item,
+				"warehouse": wh,
+				"qty": wbt.wbt_net_weight,
+				"rate": item_price,
+				"schedule_date": add_days(nowdate(), 1)
+			})
 
-
-			if itm.item_type == "Item":
-				po.append("items", {
-					"item_code": itm.item,
-					"warehouse": wh,
-					"qty": wbt.wbt_net_weight,
-					"rate": item_price,
-					"schedule_date": add_days(nowdate(), 1)
-				})
-			elif itm.item_type == "Charge":
-				po.append("taxes", {
-					"doctype": "Sales Taxes and Charges",
-					"charge_type": "Actual",
-					"account_head": itm.account,
-					"description": itm.description,
-					"tax_amount": itm.rate,
-				})
+		elif itm.item_type == "Charge":
+			po.append("taxes", {
+				"charge_type": "Actual",
+				"account_head": itm.account,
+				"description": itm.description,
+				"tax_amount": itm.rate
+			})
 
 	try:
 		po.submit()
@@ -397,6 +396,7 @@ def check_create_pr(wbtname=None):
 		else:
 			pr = create_pr_for_po(wbtname, po)
 
+@frappe.whitelist()
 def check_create_pi(wbtname=None):
 	po = check_create_po(wbtname)
 
@@ -408,4 +408,4 @@ def check_create_pi(wbtname=None):
 		else:
 			pi = create_pi_for_po(wbtname, po)
 
-#~Purchase Docs
+#~Purchase Docsf
