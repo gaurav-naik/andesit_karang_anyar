@@ -37,21 +37,22 @@ frappe.ui.form.on('Weighbridge Ticket', {
 
 
 function make_btn_purchase_docs(frm) {
-	// frm.add_custom_button(__('Create Purchase Docs'), function(){
-	// 	frappe.call({
-	// 		method: "andesit_karang_anyar.andesit_karang_anyar.doctype.weighbridge_ticket.weighbridge_ticket.create_purchase_docs",
-	// 		args: {"docname": frm.doc.name},
-	// 		freeze: true,
-	// 		freeze_message: __("Creating Purchase Docs"),
-	// 		callback: function(r){
-	// 			if(!r.exc) {
-	// 				//frappe.msgprint(__("Purchase Docs created."));
-	// 			} else {
-	// 				frappe.msgprint(__("Purchase Docs could not be created. <br /> " + r.exc));
-	// 			}
-	// 		}
-	// 	});
-	// }, __("Make"));
+	frm.add_custom_button(__('Purchase Order'), function(){
+		frappe.call({
+			method: "andesit_karang_anyar.andesit_karang_anyar.doctype.weighbridge_ticket.weighbridge_ticket.check_create_po",
+			args: {"wbtname": frm.doc.name},
+			freeze: true,
+			freeze_message: __("Creating Purchase Order"),
+			callback: function(r){
+				if(!r.exc) {
+					//frappe.msgprint(__("Purchase Docs created."));
+				} else {
+					frappe.msgprint(__("Purchase Order could not be created. <br /> " + r.exc));
+				}
+			}
+		});
+	}, __("Make"));
+
 
 	frm.add_custom_button(__('Purchase Receipt'), function(){
 		frappe.call({
@@ -84,24 +85,26 @@ function make_btn_purchase_docs(frm) {
 			}
 		});
 	}, __("Make"));
+
+
 }
 
 function make_btn_sales_docs(frm) {
-	// frm.add_custom_button(__('Create Sales Docs'), function(){
-	// 	frappe.call({
-	// 		method: "andesit_karang_anyar.andesit_karang_anyar.doctype.weighbridge_ticket.weighbridge_ticket.create_sales_docs",
-	// 		args: {"docname": frm.doc.name},
-	// 		freeze: true,
-	// 		freeze_message: __("Creating Sales Docs"),
-	// 		callback: function(r){
-	// 			if(!r.exc) {
-	// 				//frappe.msgprint(__("Sales Docs created."));
-	// 			} else {
-	// 				frappe.msgprint(__("Sales Docs could not be created. <br /> " + r.exc));
-	// 			}
-	// 		}
-	// 	});
-	// }, __("Make"));
+	frm.add_custom_button(__('Sales Order'), function(){
+		frappe.call({
+			method: "andesit_karang_anyar.andesit_karang_anyar.doctype.weighbridge_ticket.weighbridge_ticket.check_create_so",
+			args: {"wbtname": frm.doc.name},
+			freeze: true,
+			freeze_message: __("Creating Sales Order"),
+			callback: function(r){
+				if(!r.exc) {
+					//frappe.msgprint(__("Purchase Docs created."));
+				} else {
+					frappe.msgprint(__("Sales Order could not be created. <br /> " + r.exc));
+				}
+			}
+		});
+	}, __("Make"));
 
 	frm.add_custom_button(__('Delivery Note'), function(){
 		frappe.call({
