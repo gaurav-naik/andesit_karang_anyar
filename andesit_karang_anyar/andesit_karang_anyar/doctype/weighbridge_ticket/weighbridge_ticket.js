@@ -7,9 +7,11 @@ frappe.ui.form.on('Weighbridge Ticket', {
 	party_type: function(frm){
 		if (frm.doc.party_type==="Customer"){
 			frm.set_value("wbt_load_direction","Outgoing");
+			//Set selling price list
 		} 
 		else if (frm.doc.party_type==="Supplier") {
 			frm.set_value("wbt_load_direction","Incoming");
+			//Set buying price list
 		}
 	},
 
@@ -26,7 +28,7 @@ frappe.ui.form.on('Weighbridge Ticket', {
 	},
 	
 	
-	refresh: function(frm) {
+	refresh: function(frm, cdt, cdn) {
 		set_second_weighing_visibility(frm);
 		cur_frm.add_fetch("wbt_vehicle", "wb_vehicle_tare_weight", "wbt_vehicle_tare_weight");
 		if (frm.doc.workflow_state == "Weighing Complete") {
@@ -37,43 +39,111 @@ frappe.ui.form.on('Weighbridge Ticket', {
 			}
 		}
 	},
-
 });
 
+
+
 function make_btn_purchase_docs(frm) {
-	frm.add_custom_button(__('Create Purchase Docs'), function(){
+	frm.add_custom_button(__('Purchase Order'), function(){
 		frappe.call({
-			method: "andesit_karang_anyar.andesit_karang_anyar.doctype.weighbridge_ticket.weighbridge_ticket.create_purchase_docs",
-			args: {"docname": frm.doc.name},
+			method: "andesit_karang_anyar.andesit_karang_anyar.doctype.weighbridge_ticket.weighbridge_ticket.check_create_po",
+			args: {"wbtname": frm.doc.name},
 			freeze: true,
-			freeze_message: __("Creating Purchase Docs"),
+			freeze_message: __("Creating Purchase Order"),
 			callback: function(r){
 				if(!r.exc) {
-					frappe.msgprint(__("Purchase Docs created."));
+					//frappe.msgprint(__("Purchase Docs created."));
 				} else {
-					frappe.msgprint(__("Purchase Docs could not be created. <br /> " + r.exc));
+					frappe.msgprint(__("Purchase Order could not be created. <br /> " + r.exc));
 				}
 			}
 		});
-	});
+	}, __("Make"));
+
+
+	frm.add_custom_button(__('Purchase Receipt'), function(){
+		frappe.call({
+			method: "andesit_karang_anyar.andesit_karang_anyar.doctype.weighbridge_ticket.weighbridge_ticket.check_create_pr",
+			args: {"wbtname": frm.doc.name},
+			freeze: true,
+			freeze_message: __("Creating Purchase Receipt"),
+			callback: function(r){
+				if(!r.exc) {
+					//frappe.msgprint(__("Purchase Docs created."));
+				} else {
+					frappe.msgprint(__("Purchase Receipt could not be created. <br /> " + r.exc));
+				}
+			}
+		});
+	}, __("Make"));
+
+	frm.add_custom_button(__('Purchase Invoice'), function(){
+		frappe.call({
+			method: "andesit_karang_anyar.andesit_karang_anyar.doctype.weighbridge_ticket.weighbridge_ticket.check_create_pi",
+			args: {"wbtname": frm.doc.name},
+			freeze: true,
+			freeze_message: __("Creating Purchase Invoice"),
+			callback: function(r){
+				if(!r.exc) {
+					//frappe.msgprint(__("Purchase Docs created."));
+				} else {
+					frappe.msgprint(__("Purchase Invoice could not be created. <br /> " + r.exc));
+				}
+			}
+		});
+	}, __("Make"));
+
+
 }
 
 function make_btn_sales_docs(frm) {
-	frm.add_custom_button(__('Create Sales Docs'), function(){
+	frm.add_custom_button(__('Sales Order'), function(){
 		frappe.call({
-			method: "andesit_karang_anyar.andesit_karang_anyar.doctype.weighbridge_ticket.weighbridge_ticket.create_sales_docs",
-			args: {"docname": frm.doc.name},
+			method: "andesit_karang_anyar.andesit_karang_anyar.doctype.weighbridge_ticket.weighbridge_ticket.check_create_so",
+			args: {"wbtname": frm.doc.name},
 			freeze: true,
-			freeze_message: __("Creating Sales Docs"),
+			freeze_message: __("Creating Sales Order"),
 			callback: function(r){
 				if(!r.exc) {
-					frappe.msgprint(__("Sales Docs created."));
+					//frappe.msgprint(__("Purchase Docs created."));
 				} else {
-					frappe.msgprint(__("Sales Docs could not be created. <br /> " + r.exc));
+					frappe.msgprint(__("Sales Order could not be created. <br /> " + r.exc));
 				}
 			}
 		});
-	});
+	}, __("Make"));
+
+	frm.add_custom_button(__('Delivery Note'), function(){
+		frappe.call({
+			method: "andesit_karang_anyar.andesit_karang_anyar.doctype.weighbridge_ticket.weighbridge_ticket.check_create_dn",
+			args: {"wbtname": frm.doc.name},
+			freeze: true,
+			freeze_message: __("Creating Delivery Note"),
+			callback: function(r){
+				if(!r.exc) {
+					//frappe.msgprint(__("Purchase Docs created."));
+				} else {
+					frappe.msgprint(__("Delivery note could not be created. <br /> " + r.exc));
+				}
+			}
+		});
+	}, __("Make"));
+
+	frm.add_custom_button(__('Sales Invoice'), function(){
+		frappe.call({
+			method: "andesit_karang_anyar.andesit_karang_anyar.doctype.weighbridge_ticket.weighbridge_ticket.check_create_si",
+			args: {"wbtname": frm.doc.name},
+			freeze: true,
+			freeze_message: __("Creating Sales Invoice"),
+			callback: function(r){
+				if(!r.exc) {
+					//frappe.msgprint(__("Purchase Docs created."));
+				} else {
+					frappe.msgprint(__("Sales Invoice could not be created. <br /> " + r.exc));
+				}
+			}
+		});
+	}, __("Make"));
 }
 
 
@@ -92,3 +162,4 @@ function set_second_weighing_visibility(frm) {
 	frm.set_df_property("wbt_time_out", "hidden", condition_hidden);
 	
 }
+cur_frm.add_fetch("company", "default_currency", "company_currency");
