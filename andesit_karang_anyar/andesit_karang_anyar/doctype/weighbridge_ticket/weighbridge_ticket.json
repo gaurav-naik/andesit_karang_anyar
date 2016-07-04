@@ -887,11 +887,7 @@
  "issingle": 0, 
  "istable": 0, 
  "max_attachments": 0, 
-<<<<<<< HEAD
- "modified": "2016-06-29 13:38:19.504963", 
-=======
  "modified": "2016-06-30 15:29:36.710277", 
->>>>>>> c78c3e2c779fc1cdc629c2cf8901e2208fe0b08c
  "modified_by": "Administrator", 
  "module": "Andesit Karang Anyar", 
  "name": "Weighbridge Ticket", 
