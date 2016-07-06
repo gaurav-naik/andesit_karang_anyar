@@ -7,13 +7,13 @@
  "doctype": "Report", 
  "idx": 0, 
  "is_standard": "Yes", 
- "modified": "2016-07-05 08:14:06.688678", 
+ "modified": "2016-07-06 16:14:52.715457", 
  "modified_by": "Administrator", 
  "module": "Andesit Karang Anyar", 
  "name": "Sales Order and Purchase Order", 
  "owner": "Administrator", 
- "query": "", 
+ "query": "SELECT \n  `tabSales Order`.name as \"ID:Link/Sales Order:200\",\n  `tabSales Order`.customer_name as \"Customer Name:Link/customer:200\",\n  `tabSales Order`.company as \"Company:Link/DocType:200\",\n  `tabSales Order`.territory as \"Territory:Link/DocType:200\",\n  `tabSales Order`.to_date as \"Date:Link/DocType:200\",\n `tabSales Order`.delivery_date as \"Delivery Date:Link/DocType:200\",\n`tabSales Order`.shipping_address as \"Shipping Address:Link/DocType:200\",\n`tabSales Order`.customer_address as \"Customer Address:Link/DocType:200\",\n`tabSales Order`.contact_person as \"Contact Person:Link/DocType:200\",\n`tabSales Order`.status as \"status:Link/DocType:200\",\n`tabSales Order`.grand_total as  \"Grand Total:Link/DocType:200\"\nFROM \n    `tabSales Order`\nWHERE\n    `tabSales Order`.status = 'Draft' \n   \n\n\n\n\n\n\n", 
  "ref_doctype": "Weighbridge Ticket", 
  "report_name": "Sales Order and Purchase Order", 
- "report_type": "Script Report"
+ "report_type": "Query Report"
 }
