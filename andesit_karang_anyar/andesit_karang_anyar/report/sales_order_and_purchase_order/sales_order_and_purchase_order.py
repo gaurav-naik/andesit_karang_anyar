@@ -3,125 +3,70 @@
 
 from __future__ import unicode_literals
 import frappe
-from frappe.utils import cint
-from frappe import _
+from frappe import msgprint, _
+from frappe.utils import flt
 
 def execute(filters=None):
-	if not filters: filters ={}
-
-	days_since_last_order = filters.get("days_since_last_order")
-	doctype = filters.get("doctype")
-
-	if cint(days_since_last_order) <= 0:
-		frappe.throw(_("'Days Since Last Order' must be greater than or equal to zero"))
-
-	columns = get_columns(doctype)
-	customers = get_sales_details(doctype)
-	suppliers = get_purchase_details(doctype)
-
+	if not filters: filters = {}
+    
+	columns = get_columns(filters)
+	entries = get_entries(filters)
 	data = []
-	if doctype == "Sales Order":
-		for cust in customers:
-			if cint(cust[8]) >= cint(days_since_last_order):
-				cust.insert(7,get_last_sales_amt(cust[0], doctype))
-				data.append(cust)
-	elif  doctype == "Purchase Order":	
-		for sup in suppliers:
-			if cint(sup[8]) >= cint(days_since_last_order):
-				cust.insert(7,get_last_purchase_amt(sup[0], doctype))
-				data.append(sup)
+	total_wbt_net_weight = 0.0
+
+	# To find Total of net weight at the end of report.
+	for d in entries:
+	#	total_wbt_net_weight += (d.wbt_net_weight)
+
+		data.append([
+			d.name, d.name, d.customer, d.company, d.transaction_date, d.delivery_date, d.shipping_address_name, d.grand_total, d.territory, d.customer_address,d.contact_person
+		])
+
+	# if data:
+	# 	total_row = [""]*len(data[0])
+	# 	total_row[0] = _("Total")
+	# 	total_row[-1] = total_wbt_net_weight
+	# 	data.append(total_row)
 
 	return columns, data
+#Display Column row from Wieghbridge Ticket Report.
+def get_columns(filters):
+	if not filters.get("doc_type"):
+		msgprint(_("Please select the document type first"), raise_exception=1)
 
-def get_sales_details(doctype):
-	cond = """sum(so.base_net_total) as 'total_order_considered',
-			max(so.posting_date) as 'last_order_date',
-			DATEDIFF(CURDATE(), max(so.posting_date)) as 'days_since_last_order' """
-	if doctype == "Sales Order":
-		cond = """sum(if(so.status = "Stopped",
-				so.base_net_total * so.per_delivered/100,
-				so.base_net_total)) as 'total_order_considered',
-			max(so.transaction_date) as 'last_order_date',
-			DATEDIFF(CURDATE(), max(so.transaction_date)) as 'days_since_last_order'"""
-
-	return frappe.db.sql("""select
-			cust.name,
-			cust.customer_name,
-			cust.territory,
-			cust.customer_group,
-			count(distinct(so.name)) as 'num_of_order',
-			sum(base_net_total) as 'total_order_value', {0}
-		from `tabCustomer` cust, `tab{1}` so
-		where cust.name = so.customer and so.docstatus = 1
-		group by cust.name
-		order by 'days_since_last_order' desc """.format(cond, doctype), as_list=1)
-
-def get_last_sales_amt(customer, doctype):
-	cond = "posting_date"
-	if doctype =="Sales Order":
-		cond = "transaction_date"
-	res =  frappe.db.sql("""select base_net_total from `tab{0}`
-		where customer = %s and docstatus = 1 order by {1} desc
-		limit 1""".format(doctype, cond), customer)
-
-	return res and res[0][0] or 0
-
-
-def get_purchase_details(doctype):
-	cond = """sum(po.base_net_total) as 'total_order_considered',
-			max(po.po_date) as 'last_order_date',
-			DATEDIFF(CURDATE(), max(po.po_date)) as 'days_since_last_order' """	
-	if doctype == "Purchase Order":
-		cond = """sum(if(po.status = "Stopped",
-				po.base_net_total * po.per_delivered/100,
-				po.base_net_total)) as 'total_order_considered',
-			max(po.transaction_date) as 'last_order_date',
-			DATEDIFF(CURDATE(), max(po.transaction_date)) as 'days_since_last_order'"""
-
-	return frappe.db.sql("""select
-			sup.name,
-			sup.supplier_name,
-			count(distinct(po.name)) as 'num_of_order',
-			sum(base_net_total) as 'total_order_value', {0}
-		from `tabSupplier` sup, `tab{1}` po
-		where po.docstatus = 1
-		group by sup.name
-		order by 'days_since_last_order' desc """.format(cond, doctype), as_list=1)
-
-
-def get_last_purchase_amt(supplier, doctype):
-	cond = "po_date"
-	if doctype =="Purchase Order":
-		cond = "transaction_date"
-	res =  frappe.db.sql("""select base_net_total from `tab{0}`
-		where supplier = %s and docstatus = 1 order by {1} desc
-		limit 1""".format(doctype, cond), supplier)
-
-	return res and res[0][0] or 0
-
-
-def get_columns(doctype):
-	if doctype == "Sales Order":
-		return [
-			_("Customer") + ":Link/Customer:120",
-			_("Customer Name") + ":Data:120",
-			_("Territory") + "::120",
-			_("Customer Group") + "::120",
-			_("Number of Order") + "::120",
-			_("Total Order Value") + ":Currency:120",
-			_("Total Order Considered") + ":Currency:160",
-			_("Last Order Amount") + ":Currency:160",
-			_("Last Order Date") + ":Date:160",
-			_("Days Since Last Order") + "::160"
-		]
-	elif doctype == "Purchase Order":
-		return [
-		_("Supplier") + ":Link/Supplier:120",
-		_("Supplier Name") + ":Data:120",
-		_("Number of Order") + "::120",
-		_("Total Order Value") + ":Currency:120",
-		_("Total Order Considered") + ":Currency:160",
-		_("Last Order Amount") + ":Currency:160",
-		_("Last Order Date") + ":Date:160",
-		_("Days Since Last Order") + "::160"
+	return [filters["doc_type"] + ":Link/" + filters["doc_type"] + ":140",
+		_("Customer") + ":Link/Customer:120",
+		_("Customer Name") + ":Data:120",
+		_("Company") + ":Link/Company:120",
+		_("Date") + ":Date:120",
+		_("Delivery Date") + ":Date:120",
+		_("Shipping Address") + ":Link/DocType:120",
+		_("Grand Total") + ":Float:160",
+		_("Territory") + ":Link/Territory:160",
+		_("Contact Address") + ":Link/Address:160",
+		_("Contact Person") + ":Link/Contact:160"
 	]
+
+#Display Data in  Wieghbridge Ticket Report.
+def get_entries(filters):
+	# doc_field = filters["doc_type"] == 'Customer'
+	# conditions, values = get_conditions(filters, doc_field)
+	entries = frappe.db.sql("""
+		select
+			cs.name, cs.name, cs.customer, wt.company, wt.transaction_date, wt.delivery_date,wt.shipping_address_name,wt.grand_total,wt.territory,wt.customer_address,wt.contact_person
+		from 
+			`tab%s` cs, `tabSales Order` wt 
+		""" %(filters["doc_type"]), as_dict=1)
+
+	return entries
+
+# Start Wrok Here-- after break
+# def get_conditions(filters, doc_field):
+# 	conditions = [""]
+#  	values = []
+
+#  	for field in ["Supplier", "Customer"]:
+# 		if filters.get(field):
+#  			conditions.append("wt.{0}=%s".format(field))
+#  			values.append(filters[field])
+#  	return " and ".join(conditions), values
