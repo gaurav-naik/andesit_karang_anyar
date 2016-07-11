@@ -50,7 +50,8 @@ def get_entries(filters):
 		from 
 			`tab%s` cs, `tabWeighbridge Ticket` wt 
 		where  
-			wt.workflow_state = 'Weighing Complete';
+			wt.workflow_state = 'Weighing Complete'
+			AND (cs.name = wt.customer OR cs.name = wt.supplier);
 		""" %(filters["doc_type"]), as_dict=1)
 
 	return entries
