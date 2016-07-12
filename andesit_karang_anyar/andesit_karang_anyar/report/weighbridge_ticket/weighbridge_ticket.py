@@ -19,7 +19,7 @@ def execute(filters=None):
 		total_wbt_net_weight += (d.wbt_net_weight)
 
 		data.append([
-			d.name, d.name, d.wbt_vehicle, d.workflow_state, d.wbt_net_weight
+			d.csname, d.name, d.wbt_vehicle, d.workflow_state, d.wbt_net_weight
 		])
 
 	if data:
@@ -46,7 +46,7 @@ def get_entries(filters):
 	# conditions, values = get_conditions(filters, doc_field)
 	entries = frappe.db.sql("""
 		select
-			cs.name, wt.name, wt.wbt_vehicle, wt.workflow_state, wt.wbt_net_weight 
+			cs.name AS csname, wt.name, wt.wbt_vehicle, wt.workflow_state, wt.wbt_net_weight 
 		from 
 			`tab%s` cs, `tabWeighbridge Ticket` wt 
 		where  
