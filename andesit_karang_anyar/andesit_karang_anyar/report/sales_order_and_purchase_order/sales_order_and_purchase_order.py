@@ -71,21 +71,17 @@ def get_entries(filters):
 	if filters["doc_type"] == "Sales Order":
 		entries = frappe.db.sql("""
 			select
-				cs.name, wt.name, wt.customer, wt.company, wt.transaction_date, wt.delivery_date,wt.shipping_address_name,wt.grand_total,wt.territory,wt.customer_address,wt.contact_person
+				wt.name, wt.customer, wt.company, wt.transaction_date, wt.delivery_date,wt.shipping_address_name,wt.grand_total,wt.territory,wt.customer_address,wt.contact_person
 			from 
-				`tab%s` cs, `tabSales Order` wt 
-			where 
-				cs.name = wt.name
+				`tab%s` wt
 			""" %(filters["doc_type"]), as_dict=1)
 
 	elif filters["doc_type"] == "Purchase Order":
 		entries = frappe.db.sql("""
 			select
-				cs.name, wt.name, wt.supplier_name, wt.company, wt.transaction_date, wt.supplier_address,wt.grand_total,wt.supplier_address,wt.contact_person
+				wt.name, wt.supplier_name, wt.company, wt.transaction_date, wt.supplier_address,wt.grand_total,wt.supplier_address,wt.contact_person
 			from 
-				`tab%s` cs, `tabPurchase Order` wt 
-			where 
-				cs.name = wt.name	
+				`tab%s` wt
 			""" %(filters["doc_type"]), as_dict=1)
 
 
