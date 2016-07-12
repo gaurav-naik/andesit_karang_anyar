@@ -84,6 +84,8 @@ def get_entries(filters):
 				cs.name, wt.name, wt.supplier_name, wt.company, wt.transaction_date, wt.supplier_address,wt.grand_total,wt.supplier_address,wt.contact_person
 			from 
 				`tab%s` cs, `tabPurchase Order` wt 
+			where 
+				cs.name = wt.name	
 			""" %(filters["doc_type"]), as_dict=1)
 
 
