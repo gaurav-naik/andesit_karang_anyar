@@ -74,6 +74,8 @@ def get_entries(filters):
 				cs.name, wt.name, wt.customer, wt.company, wt.transaction_date, wt.delivery_date,wt.shipping_address_name,wt.grand_total,wt.territory,wt.customer_address,wt.contact_person
 			from 
 				`tab%s` cs, `tabSales Order` wt 
+			where 
+				cs.name = wt.name
 			""" %(filters["doc_type"]), as_dict=1)
 
 	elif filters["doc_type"] == "Purchase Order":
