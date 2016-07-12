@@ -29,6 +29,7 @@ def execute(filters=None):
 		data.append(total_row)
 
 	return columns, data
+
 #Display Column row from Wieghbridge Ticket Report.
 def get_columns(filters):
 	if not filters.get("doc_type"):
