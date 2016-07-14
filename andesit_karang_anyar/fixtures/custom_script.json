@@ -1,1 +1,11 @@
-[]
+[
+ {
+  "docstatus": 0, 
+  "doctype": "Custom Script", 
+  "dt": "Purchase Receipt", 
+  "modified": "2016-07-14 13:39:25.052433", 
+  "name": "Purchase Receipt-Client", 
+  "script": "set_print_hide = function(doc, cdt, cdn){\n\tvar dn_fields = frappe.meta.docfield_map['Purchase Receipt'];\n\tvar dn_item_fields = frappe.meta.docfield_map['Purchase Receipt Item'];\n\tvar dn_fields_copy = dn_fields;\n\tvar dn_item_fields_copy = dn_item_fields;\n\n\tif (doc.print_without_amount) {\n\t\tdn_item_fields['amount'].print_hide = 1;\n\t\tdn_fields['total'].print_hide = 1;\n                dn_fields['grand_total'].print_hide = 1;\n                dn_fields['in_words'].print_hide = 1;\n\t} else {\n\t\tif (dn_fields_copy['total'].print_hide != 1)\n\t\t\tdn_fields['total'].print_hide = 0;\n                if (dn_fields_copy['grand_total'].print_hide != 1)\n\t\t\tdn_fields['grand_total'].print_hide = 0;\n                if (dn_fields_copy['in_words'].print_hide != 1)\n\t\t\tdn_fields['in_words'].print_hide = 0;\n\t\tif (dn_item_fields_copy['amount'].print_hide != 1)\n\t\t\tdn_item_fields['amount'].print_hide = 0;\n\t}\n}\n\n\nfrappe.ui.form.on(\"Purchase Receipt\", {\n    print_without_amount: function(doc, cdt, cdn) {\n        frm.set_print_hide(doc, cdt, cdn);\n    },\n});\n", 
+  "script_type": "Client"
+ }
+]
