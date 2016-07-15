@@ -118,5 +118,5 @@ fixtures = ["Custom Script",
 			{"dt": "UOM", "filters": [["name", "=", "Tons"]]},
 			{"dt": "Workflow", "filters": [["document_type", "=", "Weighbridge Ticket"]]},
 			{"dt": "Workflow State", "filters": [["name", "in", ["First Weighing", "Second Weighing", "Weighing Complete"]]]},
-			{"dt": "Workflow Action", "filters": [["name", "=", "Second Weighing"]]}
-			]
+			{"dt": "Workflow Action", "filters": [["name", "=", "Second Weighing"]]}, 
+			{"dt": "Print Format", "filters": [["name", "=", "Print Without Amount"]]}]
