@@ -20,6 +20,7 @@ frappe.ui.form.on('Weighbridge Ticket', {
 			frm.set_value("wbt_net_weight", Math.abs(frm.doc.wbt_first_weighing - frm.doc.wbt_second_weighing));
 		} 
 	},
+
 	
 	refresh: function(frm, cdt, cdn) {
 		set_second_weighing_visibility(frm);
@@ -31,10 +32,16 @@ frappe.ui.form.on('Weighbridge Ticket', {
 				make_btn_purchase_docs(frm);
 			}
 		}
+
+		//Filter drivers by vehicle.
+		frm.set_query("wbt_driver", function() {
+		    return {
+		        query: "andesit_karang_anyar.utilities.driverlist.driver_query_2",
+		        filters: {"vehicleno": frm.doc.wbt_vehicle}
+		    };
+		});
 	},
 });
-
-
 
 function make_btn_purchase_docs(frm) {
 	frm.add_custom_button(__('Purchase Order'), function(){
@@ -85,8 +92,6 @@ function make_btn_purchase_docs(frm) {
 			}
 		});
 	}, __("Make"));
-
-
 }
 
 function make_btn_sales_docs(frm) {

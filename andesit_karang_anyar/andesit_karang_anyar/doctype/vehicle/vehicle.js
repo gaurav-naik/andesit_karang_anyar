@@ -6,17 +6,10 @@ frappe.ui.form.on('Vehicle', {
 	refresh: function(frm) {
 		if (!cur_frm.doc.__islocal) {
 			$(frm.fields_dict['drivers'].wrapper)
-				.html(frappe.render_template("driver_list", cur_frm.doc.__onload))
-				.find(".btn-driver").on("click", function() {
-					new_doc("Driver");
-				});
+				.html(frappe.render_template("driver_list", cur_frm.doc.__onload));
 		}
 	}
 });
 
-frappe.ui.form.on("Vehicle Driver", "vehicle_driver", function(frm, cdt, cdn) {
-	var vd = locals[cdt][cdn];
-	vd.driver_name = vd.driver.wb_driver_fn + (vd.driver.wb_driver_ln ? " " + vd.driver.wb_driver_ln : "");
-	vd.driver_licence_no = vd.driver.wb_driver_licence;
-	frm.refresh_fields();
-});
+cur_frm.add_fetch("vehicle_driver", "wb_driver_fn", "driver_name");
+cur_frm.add_fetch("vehicle_driver", "wb_driver_licence", "driver_licence_no");

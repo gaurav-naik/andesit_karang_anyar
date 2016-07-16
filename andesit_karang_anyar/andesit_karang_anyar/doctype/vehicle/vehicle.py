@@ -11,5 +11,14 @@ from andesit_karang_anyar.utilities.driverlist import load_drivers
 class Vehicle(Document):
 
 	def onload(self):
-		load_drivers(self)
-		
+
+		dlist = load_drivers(self.wb_vehicle_registration) 
+		self.get("__onload").driver_list = dlist
+
+	# def fetch_driver_info(self, driverdocname):
+
+	# 	frappe.msgprint(driverdocname)
+
+	# 	dr = frappe.get_doc("Driver", driverdocname)
+
+	# 	return dr

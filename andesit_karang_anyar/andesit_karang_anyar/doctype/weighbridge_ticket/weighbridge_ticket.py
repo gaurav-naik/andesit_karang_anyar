@@ -105,6 +105,8 @@ class WeighbridgeTicket(Document):
 			if ((not self.wbt_second_weighing) or (self.wbt_second_weighing <= 0.0)):
 				frappe.throw(_("Second weighing cannot be left blank or zero."))
 
+
+
 #SALES DOCS ------
 
 
