@@ -108,9 +108,10 @@ app_include_js = "/assets/js/aka.min.js"
 # Overriding Whitelisted Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "andesit_karang_anyar.event.get_events"
-# }
+override_whitelisted_methods = {
+#frappe.desk.doctype.event.event.get_events": "andesit_karang_anyar.event.get_events"
+	"frappe.desk.moduleview.get":"andesit_karang_anyar.api.akawbm_get"
+}
 
 fixtures = ["Custom Script", 
 			"Custom Field", 
