@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from . import __version__ as app_version
 
 app_name = "andesit_karang_anyar"
 app_title = "Andesit Karang Anyar"
@@ -8,7 +9,6 @@ app_description = "ERPNext customization for Andesit Karang Anyar"
 app_icon = "icon-truck"
 app_color = "#16161D"
 app_email = "support@castlecraft.in"
-app_version = "0.0.1"
 app_license = "GPL v3"
 
 # Includes in <head>
@@ -17,6 +17,7 @@ app_license = "GPL v3"
 # include js, css files in header of desk.html
 # app_include_css = "/assets/andesit_karang_anyar/css/andesit_karang_anyar.css"
 # app_include_js = "/assets/andesit_karang_anyar/js/andesit_karang_anyar.js"
+app_include_js = "/assets/js/aka.min.js"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/andesit_karang_anyar/css/andesit_karang_anyar.css"
@@ -94,7 +95,7 @@ app_license = "GPL v3"
 # 	"weekly": [
 # 		"andesit_karang_anyar.tasks.weekly"
 # 	]
-# 	"monthly": [
+# 	"monthly": [, 
 # 		"andesit_karang_anyar.tasks.monthly"
 # 	]
 # }
@@ -107,7 +108,16 @@ app_license = "GPL v3"
 # Overriding Whitelisted Methods
 # ------------------------------
 #
-# override_whitelisted_methods = {
-# 	"frappe.desk.doctype.event.event.get_events": "andesit_karang_anyar.event.get_events"
-# }
+override_whitelisted_methods = {
+#frappe.desk.doctype.event.event.get_events": "andesit_karang_anyar.event.get_events"
+	"frappe.desk.moduleview.get":"andesit_karang_anyar.api.akawbm_get"
+}
 
+fixtures = ["Custom Script", 
+			"Custom Field", 
+			"Property Setter",  
+			{"dt": "UOM", "filters": [["name", "=", "Tons"]]},
+			{"dt": "Workflow", "filters": [["document_type", "=", "Weighbridge Ticket"]]},
+			{"dt": "Workflow State", "filters": [["name", "in", ["First Weighing", "Second Weighing", "Weighing Complete"]]]},
+			{"dt": "Workflow Action", "filters": [["name", "=", "Second Weighing"]]}, 
+			{"dt": "Print Format", "filters": [["name", "=", "Print Without Amount"]]}]

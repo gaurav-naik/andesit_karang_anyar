@@ -5,6 +5,20 @@
 from __future__ import unicode_literals
 import frappe
 from frappe.model.document import Document
+from frappe import _
+from andesit_karang_anyar.utilities.driverlist import load_drivers
 
 class Vehicle(Document):
-	pass
+
+	def onload(self):
+
+		dlist = load_drivers(self.wb_vehicle_registration) 
+		self.get("__onload").driver_list = dlist
+
+	# def fetch_driver_info(self, driverdocname):
+
+	# 	frappe.msgprint(driverdocname)
+
+	# 	dr = frappe.get_doc("Driver", driverdocname)
+
+	# 	return dr
