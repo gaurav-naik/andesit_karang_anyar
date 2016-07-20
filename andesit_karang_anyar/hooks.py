@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from . import __version__ as app_version
 
 app_name = "andesit_karang_anyar"
 app_title = "Andesit Karang Anyar"
@@ -8,7 +9,6 @@ app_description = "ERPNext customization for Andesit Karang Anyar"
 app_icon = "icon-truck"
 app_color = "#16161D"
 app_email = "support@castlecraft.in"
-app_version = "0.0.1"
 app_license = "GPL v3"
 
 # Includes in <head>
