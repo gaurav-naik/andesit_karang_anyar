@@ -12,7 +12,9 @@ class Vehicle(Document):
 
 	def onload(self):
 
-		dlist = load_drivers(self.wb_vehicle_registration) 
+		dlist = load_drivers(self.wb_vehicle_registration)
+
+		
 		self.get("__onload").driver_list = dlist
 
 	# def fetch_driver_info(self, driverdocname):

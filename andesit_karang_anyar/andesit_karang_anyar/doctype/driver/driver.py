@@ -14,9 +14,10 @@ class Driver(Document):
 		self.validate_licence_number()
 
 	def validate_licence_number(self):
-		if len(self.wb_driver_licence) < 12:
-			frappe.throw(_("License Number is not too short. It should be 12 digit format."))
+		if self.wb_driver_licence: 
+			if len(self.wb_driver_licence) < 12:
+				frappe.throw(_("License Number must have 12 digits."))
 
-	def save(self):
+	def before_save(self):
 		#Set full name
 		self.full_name = self.wb_driver_fn + ((' ' + self.wb_driver_ln) if self.wb_driver_ln else '')

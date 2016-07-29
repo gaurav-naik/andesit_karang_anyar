@@ -2,12 +2,14 @@
  "allow_copy": 0, 
  "allow_import": 0, 
  "allow_rename": 1, 
- "autoname": "field:wb_driver_licence", 
+ "autoname": "DRV-.#####", 
+ "beta": 0, 
  "creation": "2016-06-13 17:46:46.732943", 
  "custom": 0, 
  "docstatus": 0, 
  "doctype": "DocType", 
  "document_type": "Document", 
+ "editable_grid": 0, 
  "fields": [
   {
    "allow_on_submit": 0, 
@@ -129,7 +131,7 @@
    "print_hide_if_no_value": 0, 
    "read_only": 0, 
    "report_hide": 0, 
-   "reqd": 1, 
+   "reqd": 0, 
    "search_index": 0, 
    "set_only_once": 0, 
    "unique": 1
@@ -189,13 +191,14 @@
  "hide_toolbar": 0, 
  "icon": "icon-user", 
  "idx": 0, 
+ "image_view": 0, 
  "in_create": 0, 
  "in_dialog": 0, 
  "is_submittable": 0, 
  "issingle": 0, 
  "istable": 0, 
  "max_attachments": 0, 
- "modified": "2016-07-16 15:31:20.044510", 
+ "modified": "2016-07-30 02:13:59.247707", 
  "modified_by": "Administrator", 
  "module": "Andesit Karang Anyar", 
  "name": "Driver", 
@@ -223,10 +226,12 @@
    "write": 1
   }
  ], 
+ "quick_entry": 0, 
  "read_only": 0, 
  "read_only_onload": 0, 
  "search_fields": "wb_driver_fn, wb_driver_licence", 
  "sort_field": "modified", 
  "sort_order": "DESC", 
- "title_field": "wb_driver_fn"
+ "title_field": "wb_driver_fn", 
+ "track_seen": 0
 }
