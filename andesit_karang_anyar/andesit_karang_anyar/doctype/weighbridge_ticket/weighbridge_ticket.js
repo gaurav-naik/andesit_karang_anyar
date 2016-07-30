@@ -36,7 +36,7 @@ frappe.ui.form.on('Weighbridge Ticket', {
 		//Filter drivers by vehicle.
 		frm.set_query("wbt_driver", function() {
 		    return {
-		        query: "andesit_karang_anyar.utilities.driverlist.driver_query_2",
+		        query: "andesit_karang_anyar.utilities.driverlist.driver_query",
 		        filters: {"vehicleno": frm.doc.wbt_vehicle}
 		    };
 		});
