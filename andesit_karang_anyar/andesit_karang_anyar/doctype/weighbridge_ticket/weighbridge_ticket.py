@@ -175,10 +175,12 @@ def create_so(wbtname=None):
 		frappe.throw("WBT was not set for SO")
 
 	#Get Warehouse from AKA_WB_Settings
-	akas = get_aka_wb_settings(wbt.company)
-	if not akas:
-		frappe.throw("Please ensure AKA Weighbridge Management Settings has valid data.")
-	wh = akas["warehouse"]
+	# akas = get_aka_wb_settings(wbt.company)
+	# if not akas:
+	# 	frappe.throw("Please ensure AKA Weighbridge Management Settings has valid data.")
+	# wh = akas["warehouse"]
+
+	wh = get_warehouse_from_items(wbt)  #get warehouse from item
 
 
 	item_price = None
@@ -223,7 +225,7 @@ def create_so(wbtname=None):
 	return so
 
 def create_dn_for_so(wbtname, so):
-	from erpnext.selling.doctype.sales_order.sales_order import make_delivery_note
+	from erpnext.selling.doctype.sales_order.sales_order i mport make_delivery_note
 	dn = make_delivery_note(so.name)
 	dn.weighbridge_ticket = wbtname
 
@@ -263,10 +265,13 @@ def create_po(wbtname):
 	po.weighbridge_ticket = wbtname
 
 	#Get Warehouse from AKA_WB_Settings
-	akas = get_aka_wb_settings(wbt.company)
-	if not akas:
-		frappe.throw("Please ensure AKA Weighbridge Management Settings has valid data.")
-	wh = akas["warehouse"]
+	# akas = get_aka_wb_settings(wbt.company)
+	# if not akas:
+	# 	frappe.throw("Please ensure AKA Weighbridge Management Settings has valid data.")
+	# wh = akas["warehouse"]
+
+
+	wh = get_warehouse_from_items(wbt) # Get warehouse from item
 
 	item_price = None
 
@@ -410,10 +415,13 @@ def create_dn_without_so(wbtname=None):
 
 	dn.weighbridge_ticket = wbtname
 	#Get Warehouse from AKA_WB_Settings
-	akas = get_aka_wb_settings(wbt.company)
-	if not akas:
-		frappe.throw("Please ensure AKA Weighbridge Management Settings has valid data.")
-	wh = akas["warehouse"]
+
+	# akas = get_aka_wb_settings(wbt.company)
+	# if not akas:
+	# 	frappe.throw("Please ensure AKA Weighbridge Management Settings has valid data.")
+	# wh = akas["warehouse"]
+
+	wh = get_warehouse_from_items(wbt) #Get warehouse form item
 
 	item_price = None
 
@@ -471,10 +479,12 @@ def create_si_without_so(wbtname=None):
 	si.weighbridge_ticket  = wbtname
 
 	#Get Warehouse from AKA_WB_Settings
-	akas = get_aka_wb_settings(wbt.company)
-	if not akas:
-		frappe.throw("Please ensure AKA Weighbridge Management Settings has valid data.")
-	wh = akas["warehouse"]
+	# akas = get_aka_wb_settings(wbt.company)
+	# if not akas:
+	# 	frappe.throw("Please ensure AKA Weighbridge Management Settings has valid data.")
+	# wh = akas["warehouse"]
+
+	wh = get_warehouse_from_items(wbt) #Get warehouse form item
 
 	item_price = None
 
@@ -595,10 +605,13 @@ def create_pr_without_po(wbtname=None):
 	pr.posting_date = frappe.utils.today()
 	pr.posting_time = frappe.utils.today()
 	pr.company = wbt.company
-	akas = get_aka_wb_settings(wbt.company)
-	if not akas:
-		frappe.throw("Please ensure AKA Weighbridge Management Settings has valid data.")
-	wh = akas["warehouse"]
+
+	# akas = get_aka_wb_settings(wbt.company)
+	# if not akas:
+	# 	frappe.throw("Please ensure AKA Weighbridge Management Settings has valid data.")
+	# wh = akas["warehouse"]
+
+	wh = get_warehouse_from_items(wbt)   # Get warehouse from item
 	pr.supplier_warehouse = wh
 	pr.currency = wbt.company_currency
 	pr.supplier = wbt.supplier
@@ -660,10 +673,13 @@ def create_pi_without_po(wbtname=None):
 	pi.posting_date = frappe.utils.today()
 	pi.posting_time = frappe.utils.today()
 	pi.company = wbt.company
-	akas = get_aka_wb_settings(wbt.company)
-	if not akas:
-		frappe.throw("Please ensure AKA Weighbridge Management Settings has valid data.")
-	wh = akas["warehouse"]
+
+	# akas = get_aka_wb_settings(wbt.company)
+	# if not akas:
+	# 	frappe.throw("Please ensure AKA Weighbridge Management Settings has valid data.")
+	# wh = akas["warehouse"]
+
+	wh = get_warehouse_from_items(wbt)    # Get warehouse from item
 
 	pi.supplier_warehouse = wh
 	pi.currency = wbt.company_currency 
@@ -723,3 +739,8 @@ def loadwbt(wbtname=None):
 		frappe.throw(_("Weighbridge Ticket '%s' could not be loaded." % (wbtname)))
 
 	return wbt
+
+def get_warehouse_from_items(wbt):
+	getticketitem = frappe.get_all("Weighbridge Ticket Item",fields = ["*"],filters = {"parent":wbt.name,"item_type":"Item"})
+	itm = frappe.get_doc("Item",getticketitem[0].item)
+	return itm.default_warehouse
