@@ -182,7 +182,6 @@ def create_so(wbtname=None):
 
 	wh = get_warehouse_from_items(wbt)  #get warehouse from item
 
-
 	item_price = None
 
 	for itm in wbt.items:
@@ -225,7 +224,7 @@ def create_so(wbtname=None):
 	return so
 
 def create_dn_for_so(wbtname, so):
-	from erpnext.selling.doctype.sales_order.sales_order i mport make_delivery_note
+	from erpnext.selling.doctype.sales_order.sales_order import make_delivery_note
 	dn = make_delivery_note(so.name)
 	dn.weighbridge_ticket = wbtname
 
@@ -743,4 +742,8 @@ def loadwbt(wbtname=None):
 def get_warehouse_from_items(wbt):
 	getticketitem = frappe.get_all("Weighbridge Ticket Item",fields = ["*"],filters = {"parent":wbt.name,"item_type":"Item"})
 	itm = frappe.get_doc("Item",getticketitem[0].item)
-	return itm.default_warehouse
+	if not itm.default_warehouse:
+		frappe.throw(_("Default warehouse must be set for item {itm}".format(itm.name)))		
+		return
+	else:
+		return itm.default_warehouse
