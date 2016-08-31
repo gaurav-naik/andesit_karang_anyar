@@ -692,6 +692,10 @@ def create_pi_without_po(wbtname=None):
 	for itm in wbt.items:
 
 		if itm.item_type == "Item":
+			#Fetch PR against WBT to link in item, in case Buying Settings > Purchase Receipt Required = Yes
+			prname = frappe.db.get_value("Purchase Receipt", {"weighbridge_ticket":wbtname}, "name")
+			if not prname:
+				frappe.throw(_("Please create Purchase Receipt before making Purchase Invoice"))
 
 			#Fetch item price to append in PO items
 			item_price = frappe.db.get_value("Item Price",
@@ -707,7 +711,8 @@ def create_pi_without_po(wbtname=None):
 				"item_code": itm.item,
 				"warehouse": wh,
 				"qty": wbt.wbt_net_weight,
-				"rate": item_price
+				"rate": item_price,
+				"purchase_receipt": prname
 			})
 			#missing: serial_no, cost_center, project.
 		elif itm.item_type == "Charge":
