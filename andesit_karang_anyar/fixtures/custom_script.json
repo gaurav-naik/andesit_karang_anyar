@@ -7,5 +7,14 @@
   "name": "Purchase Invoice-Client", 
   "script": "frappe.ui.form.on(\"Purchase Invoice\", \"onload\", function(frm) {\n\tflds = cur_frm.get_field('items').grid.editable_fields;\n\t//alert(flds[0].columns);\n\tflds[1].columns = 1;\n\tflds[2].columns = 2;\n\tflds[3].columns = 2;\n\tflds.splice(1, 0, {fieldname: 'item_name', columns: 2});\n});", 
   "script_type": "Client"
+ }, 
+ {
+  "docstatus": 0, 
+  "doctype": "Custom Script", 
+  "dt": "Weighbridge Ticket", 
+  "modified": "2016-09-16 13:44:23.889313", 
+  "name": "Weighbridge Ticket-Client", 
+  "script": "cur_frm.add_fetch(\"wbt_driver\", \"full_name\", \"driver_name\");", 
+  "script_type": "Client"
  }
 ]
