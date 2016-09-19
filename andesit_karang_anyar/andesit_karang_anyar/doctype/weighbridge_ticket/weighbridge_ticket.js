@@ -24,6 +24,7 @@ frappe.ui.form.on('Weighbridge Ticket', {
 	
 	refresh: function(frm, cdt, cdn) {
 		set_second_weighing_visibility(frm);
+		cur_frm.add_fetch("wbt_driver", "full_name", "driver_name");
 		cur_frm.add_fetch("wbt_vehicle", "wb_vehicle_tare_weight", "wbt_vehicle_tare_weight");
 		if (frm.doc.workflow_state == "Weighing Complete") {
 			if (frm.doc.party_type == "Customer") {

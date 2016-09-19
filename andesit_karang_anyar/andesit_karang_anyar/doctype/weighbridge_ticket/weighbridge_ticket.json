@@ -68,17 +68,17 @@
    "fieldtype": "Column Break"
   }, 
   {
-   "fieldname": "driver_name", 
-   "fieldtype": "Data", 
-   "label": "driver_name", 
-   "read_only": 1
-  }, 
-  {
    "fieldname": "wbt_driver", 
    "fieldtype": "Link", 
    "label": "Driver", 
    "options": "Driver", 
    "reqd": 1
+  }, 
+  {
+   "fieldname": "driver_name", 
+   "fieldtype": "Data", 
+   "label": "Driver Name", 
+   "read_only": 1
   }, 
   {
    "fieldname": "wbt_weighing_details_section_break", 
@@ -236,7 +236,7 @@
  "issingle": 0, 
  "istable": 0, 
  "max_attachments": 0, 
- "modified": "2016-09-16 13:47:30.227459", 
+ "modified": "2016-09-19 15:50:34.655667", 
  "modified_by": "Administrator", 
  "module": "Andesit Karang Anyar", 
  "name": "Weighbridge Ticket", 
