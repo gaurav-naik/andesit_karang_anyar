@@ -36,13 +36,41 @@ frappe.ui.form.on('Weighbridge Ticket', {
 
 		//Filter drivers by vehicle.
 		frm.set_query("wbt_driver", function() {
-		    return {
-		        query: "andesit_karang_anyar.utilities.driverlist.driver_query",
-		        filters: {"vehicleno": frm.doc.wbt_vehicle}
-		    };
+			return {
+				query: "andesit_karang_anyar.utilities.driverlist.driver_query",
+				filters: {"vehicleno": frm.doc.wbt_vehicle}
+			};
 		});
 	},
+	customer: function(frm){
+		var acc = "Debtors - " + frappe.get_abbr(frm.doc.company,frm.doc.company.length);
+		frappe.call({
+			method: "erpnext.accounts.utils.get_balance_on",
+			args: { "party_type": frm.doc.party_type,
+					"party": frm.doc.customer,
+					"account" : acc, 		
+				  },
+			
+			callback: function(r){
+				if (!r.message || r.message  == 0.0) {
+					frm.set_value("customer_balance_status","Customer " + frm.doc.customer + " has not made any deposit");
+				}
+				else if(r.message<0.0){
+					frm.set_value("customer_balance_status","Customer " + frm.doc.customer + " has made a deposit and balance is: Rp " + r.message + " (CR balance)");				
+				}
+				else{
+					fetch_msg_with_creditlimit(frm,r.message);
+				}
+			}
+		});		
+	}
 });
+
+function fetch_msg_with_creditlimit(frm,message){
+	frappe.db.get_value("Customer", {"customer_name": frm.doc.customer}, "credit_limit", function(r) {
+		frm.set_value("customer_balance_status","Customer " + frm.doc.customer + " has a credit limit of Rp. " + r.credit_limit  + " and balance of Rp " + message + " (DR balance)");		
+	});
+}
 
 function make_btn_purchase_docs(frm) {
 	frm.add_custom_button(__('Purchase Order'), function(){
