@@ -43,32 +43,37 @@ frappe.ui.form.on('Weighbridge Ticket', {
 		});
 	},
 	customer: function(frm){
-		var acc = "Debtors - " + frappe.get_abbr(frm.doc.company,frm.doc.company.length);
-		frappe.call({
-			method: "erpnext.accounts.utils.get_balance_on",
-			args: { "party_type": frm.doc.party_type,
-					"party": frm.doc.customer,
-					"account" : acc, 		
-				  },
-			
-			callback: function(r){
-				if (!r.message || r.message  == 0.0) {
-					frm.set_value("customer_balance_status","Customer " + frm.doc.customer + " has not made any deposit");
+		if (frm.doc.customer != undefined && frm.doc.customer != "")  {
+			var acc = "Debtors - " + frappe.get_abbr(frm.doc.company,frm.doc.company.length);
+			var currency = frappe.defaults.get_default('currency');
+			frappe.call({
+				method: "erpnext.accounts.utils.get_balance_on",
+				args: { "party_type": frm.doc.party_type,
+						"party": frm.doc.customer,
+						"account" : acc, 		
+					  },
+				
+				callback: function(r){
+					if (!r.message || r.message  == 0.0) {
+						frm.set_value("customer_balance_status","Customer " + frm.doc.customer + " has not made any deposit");
+					}
+					else if(r.message<0.0){
+						frm.set_value("customer_balance_status","Customer " + frm.doc.customer + " has made a deposit and balance is: " + currency + " " + Math.abs(r.message));
+					}
+					else{
+						fetch_msg_with_creditlimit(frm,r.message,currency);
+					}
 				}
-				else if(r.message<0.0){
-					frm.set_value("customer_balance_status","Customer " + frm.doc.customer + " has made a deposit and balance is: Rp " + r.message + " (CR balance)");				
-				}
-				else{
-					fetch_msg_with_creditlimit(frm,r.message);
-				}
-			}
-		});		
+			});
+		} else {
+			frm.set_value("customer_balance_status", "");
+		}
 	}
 });
 
-function fetch_msg_with_creditlimit(frm,message){
+function fetch_msg_with_creditlimit(frm,message,currency){
 	frappe.db.get_value("Customer", {"customer_name": frm.doc.customer}, "credit_limit", function(r) {
-		frm.set_value("customer_balance_status","Customer " + frm.doc.customer + " has a credit limit of Rp. " + r.credit_limit  + " and balance of Rp " + message + " (DR balance)");		
+		frm.set_value("customer_balance_status","Customer " + frm.doc.customer + " has a credit limit of Rp. " + r.credit_limit  + " and balance of " + currency + " " + message);		
 	});
 }
 
