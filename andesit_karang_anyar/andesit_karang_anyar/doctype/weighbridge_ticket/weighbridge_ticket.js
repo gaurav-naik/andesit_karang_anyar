@@ -7,11 +7,17 @@ frappe.ui.form.on('Weighbridge Ticket', {
 	party_type: function(frm){
 		if (frm.doc.party_type==="Customer"){
 			frm.set_value("wbt_load_direction","Outgoing");
+			frm.set_value("supplier", "");
 			//Set selling price list
 		} 
 		else if (frm.doc.party_type==="Supplier") {
 			frm.set_value("wbt_load_direction","Incoming");
+			frm.set_value("customer_balance_status", "");
+			frm.set_value("customer", "");
 			//Set buying price list
+		}
+		else{
+			frm.set_value("wbt_load_direction","");
 		}
 	},
 
@@ -73,7 +79,7 @@ frappe.ui.form.on('Weighbridge Ticket', {
 
 function fetch_msg_with_creditlimit(frm,message,currency){
 	frappe.db.get_value("Customer", {"customer_name": frm.doc.customer}, "credit_limit", function(r) {
-		frm.set_value("customer_balance_status","Customer " + frm.doc.customer + " has a credit limit of Rp. " + r.credit_limit  + " and balance of " + currency + " " + message);		
+		frm.set_value("customer_balance_status","Customer " + frm.doc.customer + " has a credit limit of " + currency + " " + r.credit_limit  + " and balance of " + currency + " " + message);		
 	});
 }
 
