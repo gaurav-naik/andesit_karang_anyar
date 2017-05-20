@@ -50,13 +50,11 @@ frappe.ui.form.on('Weighbridge Ticket', {
 	},
 	customer: function(frm){
 		if (frm.doc.customer != undefined && frm.doc.customer != "")  {
-			var acc = "Debtors - " + frappe.get_abbr(frm.doc.company,frm.doc.company.length);
 			var currency = frappe.defaults.get_default('currency');
 			frappe.call({
 				method: "erpnext.accounts.utils.get_balance_on",
 				args: { "party_type": frm.doc.party_type,
-						"party": frm.doc.customer,
-						"account" : acc, 		
+						"party": frm.doc.customer	
 					  },
 				
 				callback: function(r){
