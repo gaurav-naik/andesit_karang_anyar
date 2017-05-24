@@ -132,4 +132,3 @@ fixtures = ["Custom Script",
 			{"dt": "Workflow State", "filters": [["name", "in", ["First Weighing", "Second Weighing", "Weighing Complete"]]]},
 			{"dt": "Workflow Action", "filters": [["name", "=", "Second Weighing"]]}, 
 			{"dt": "Print Format", "filters": [["name", "=", "Print Without Amount"]]}]
-
