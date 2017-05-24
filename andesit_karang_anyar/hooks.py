@@ -114,7 +114,18 @@ override_whitelisted_methods = {
 }
 
 fixtures = ["Custom Script", 
-			"Custom Field", 
+			{"dt":"Custom Field", "filters": [["name", "in", 
+				["Weighbridge Ticket-customer_balance_status",
+				"Print Settings-compact_item_print",
+				"Purchase Receipt-print_without_amount",
+				"Purchase Receipt-weighbridge_ticket",
+				"Delivery Note-weighbridge_ticket",
+				"Purchase Invoice-weighbridge_ticket",
+				"Purchase Order-weighbridge_ticket",
+				"Sales Invoice-weighbridge_ticket",
+				"Sales Order-weighbridge_ticket",
+				"Weighbridge Ticket-workflow_state"]
+			]]},
 			"Property Setter",  
 			{"dt": "UOM", "filters": [["name", "=", "Tons"]]},
 			{"dt": "Workflow", "filters": [["document_type", "=", "Weighbridge Ticket"]]},
