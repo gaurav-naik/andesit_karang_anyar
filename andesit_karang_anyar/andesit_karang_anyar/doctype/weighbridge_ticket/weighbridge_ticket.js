@@ -30,8 +30,7 @@ frappe.ui.form.on('Weighbridge Ticket', {
 	
 	refresh: function(frm, cdt, cdn) {
 		set_second_weighing_visibility(frm);
-		cur_frm.add_fetch("wbt_driver", "full_name", "driver_name");
-		cur_frm.add_fetch("wbt_vehicle", "wb_vehicle_tare_weight", "wbt_vehicle_tare_weight");
+		
 		if (frm.doc.workflow_state == "Weighing Complete") {
 			if (frm.doc.party_type == "Customer") {
 				make_btn_sales_docs(frm);
@@ -58,6 +57,7 @@ frappe.ui.form.on('Weighbridge Ticket', {
 					  },
 				
 				callback: function(r){
+					//console.log("FETCHING MESSAGE");
 					if (!r.message || r.message  == 0.0) {
 						frm.set_value("customer_balance_status","Customer " + frm.doc.customer + " has not made any deposit");
 					}
@@ -198,4 +198,7 @@ function set_second_weighing_visibility(frm) {
 	frm.set_df_property("wbt_time_out", "hidden", condition_hidden);
 	
 }
+
 cur_frm.add_fetch("company", "default_currency", "company_currency");
+cur_frm.add_fetch("wbt_driver", "full_name", "driver_name");
+cur_frm.add_fetch("wbt_vehicle", "wb_vehicle_tare_weight", "wbt_vehicle_tare_weight");
