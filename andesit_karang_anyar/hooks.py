@@ -6,7 +6,7 @@ app_name = "andesit_karang_anyar"
 app_title = "Andesit Karang Anyar"
 app_publisher = "MN Technique"
 app_description = "ERPNext customization for Andesit Karang Anyar"
-app_icon = "fa fa-truck" 
+app_icon = "fa fa-truck"
 app_color = "#16161D"
 app_email = "support@castlecraft.in"
 app_license = "GPL v3"
@@ -95,7 +95,7 @@ app_include_js = "/assets/js/aka.min.js"
 # 	"weekly": [
 # 		"andesit_karang_anyar.tasks.weekly"
 # 	]
-# 	"monthly": [, 
+# 	"monthly": [,
 # 		"andesit_karang_anyar.tasks.monthly"
 # 	]
 # }
@@ -113,11 +113,22 @@ override_whitelisted_methods = {
 	"frappe.desk.moduleview.get":"andesit_karang_anyar.api.akawbm_get"
 }
 
-fixtures = ["Custom Script", 
-			"Custom Field", 
-			"Property Setter",  
-			{"dt": "UOM", "filters": [["name", "=", "Tons"]]},
-			{"dt": "Workflow", "filters": [["document_type", "=", "Weighbridge Ticket"]]},
-			{"dt": "Workflow State", "filters": [["name", "in", ["First Weighing", "Second Weighing", "Weighing Complete"]]]},
-			{"dt": "Workflow Action", "filters": [["name", "=", "Second Weighing"]]}, 
-			{"dt": "Print Format", "filters": [["name", "=", "Print Without Amount"]]}]
+fixtures = ["Custom Script",
+      {"dt":"Custom Field", "filters": [["name", "in",
+        ["Weighbridge Ticket-customer_balance_status",
+        "Print Settings-compact_item_print",
+        "Purchase Receipt-print_without_amount",
+        "Purchase Receipt-weighbridge_ticket",
+        "Delivery Note-weighbridge_ticket",
+        "Purchase Invoice-weighbridge_ticket",
+        "Purchase Order-weighbridge_ticket",
+        "Sales Invoice-weighbridge_ticket",
+        "Sales Order-weighbridge_ticket",
+        "Weighbridge Ticket-workflow_state"]
+      ]]},
+      "Property Setter",
+      {"dt": "UOM", "filters": [["name", "=", "Tons"]]},
+      {"dt": "Workflow", "filters": [["document_type", "=", "Weighbridge Ticket"]]},
+      {"dt": "Workflow State", "filters": [["name", "in", ["First Weighing", "Second Weighing", "Weighing Complete"]]]},
+      {"dt": "Workflow Action", "filters": [["name", "=", "Second Weighing"]]},
+      {"dt": "Print Format", "filters": [["name", "=", "Print Without Amount"]]}]

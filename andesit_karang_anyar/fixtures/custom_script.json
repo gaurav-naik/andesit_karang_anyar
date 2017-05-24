@@ -2,33 +2,6 @@
  {
   "docstatus": 0, 
   "doctype": "Custom Script", 
-  "dt": "Sales Order", 
-  "modified": "2017-05-23 10:19:15.613749", 
-  "name": "Sales Order-Client", 
-  "script": "frappe.ui.form.on(\"Sales Order\", {\n    refresh: function(frm) {\n        frm.set_query(\"item_code\", \"items\", function(doc, cdt, cdn) {\n            return {\n                filters: { \"item_group\": \"Products\" }\n            };\n        });\n        if (cur_frm.doc.docstatus == 1) {\n            add_dispatch_order_button(frm);\n        }\n    },\n});\n\n\nfunction add_dispatch_order_button(frm) {\n    frm.add_custom_button(__('Dispatch Order'), function(){\n        frappe.call({\n            method: \"lpeb_erpnext.api.make_dispatch_order_from_so\",\n            args: {\"so\": frm.doc.name},\n            freeze: true,\n            freeze_message: __(\"Creating Dispatch Order\"),\n            callback: function(r){\n                if(!r.exc) {\n                    frappe.msgprint(__(r.message));\n                } else {\n                    frappe.msgprint(__(\"Dispatch Order could not be created. <br /> \" + r.exc));\n                }\n            }\n        });\n    }, __(\"Make\"));\n}", 
-  "script_type": "Client"
- }, 
- {
-  "docstatus": 0, 
-  "doctype": "Custom Script", 
-  "dt": "Production Order", 
-  "modified": "2017-05-23 10:19:15.642156", 
-  "name": "Production Order-Client", 
-  "script": "frappe.ui.form.on(\"Production Order\", {\n    \"project\": function(frm) {\n        frappe.call({\n            method: \"lpeb_erpnext.api.get_warehouses_for_project\",\n            args: { project_name: cur_frm.doc.project},\n            callback: function(r) {\n                if (r.message) {\n                    cur_frm.set_value(\"fg_warehouse\", r.message.qc_warehouse.name);\n                }\n            }\n        })\n    }\n});", 
-  "script_type": "Client"
- }, 
- {
-  "docstatus": 0, 
-  "doctype": "Custom Script", 
-  "dt": "Sales Invoice", 
-  "modified": "2017-05-23 10:19:15.414441", 
-  "name": "Sales Invoice-Client", 
-  "script": "frappe.ui.form.on(\"Sales Invoice\", {\n    \"refresh\": function(frm) {\n        cur_frm.add_custom_button(__('Get Memo items'), function(){\n            if(!cur_frm.doc.lpeb_item_details || cur_frm.doc.lpeb_item_details.length == 0){\n                frappe.call({\n                    \"method\": \"lpeb_erpnext.api.get_memo_details_for_si_items\",\n                    \"args\": { \"si_items\": cur_frm.doc.items, \"dispatch_order\": cur_frm.doc.lpeb_dispatch_order },\n                    \"callback\": function(r) {\n                    console.log(\"sales Invoice return\",r)\n                        if (r.message) {\n                            $.each(r.message, function(index, item) {\n                                console.log(\"item\", item);\n                                var row = frappe.model.add_child(cur_frm.doc, \"LPEB Sales Invoice Item Detail\", \"lpeb_item_details\");\n                                row.item = item.item_code;\n                                row.item_name = item.item_name;\n                                row.qty = item.qty;\n                                row.weight = item.weight;\n                                row.uom = item.uom;\n                                row.parent_item = item.parent_item;\n                            });\n                        }\n                cur_frm.refresh_field(\"lpeb_item_details\");\n                    }\n                });\n            }\n        });\n     //fetch lpeb item detail on make delivery note in sales invoice\n        if (frm.doc.docstatus == 1) {\n            frm.add_custom_button(__('Delivery Note '), function(){\n               if (cur_frm.doc.dispatch_order == \"\") {\n                    frappe.msgprint(\"Please select dispatch order.\")\n                } else {\n                    console.log(\"si_name\",cur_frm.doc.name, \"si_items\",cur_frm.doc.items,\"lpeb_dispatch_order\",cur_frm.doc.lpeb_dispatch_order);\n                    frappe.call({\n                        \"method\": \"lpeb_erpnext.api.create_del_note\",\n                        \"args\": {\n                             \"si_name\": cur_frm.doc.name,\n                             \"lpeb_item_details\": cur_frm.doc.lpeb_item_details,\n                             \"lpeb_dispatch_order\": cur_frm.doc.lpeb_dispatch_order,\n                                },\n                        callback: function (r) {\n                            if (r.message) {\n                                frappe.show_alert(r.message, 5);\n                            }\n                        }\n                    });\n                }\n            });\n        }\n    }\n});\n", 
-  "script_type": "Client"
- }, 
- {
-  "docstatus": 0, 
-  "doctype": "Custom Script", 
   "dt": "Purchase Invoice", 
   "modified": "2016-07-26 14:44:16.394256", 
   "name": "Purchase Invoice-Client", 
