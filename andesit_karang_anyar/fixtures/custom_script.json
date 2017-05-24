@@ -2,15 +2,6 @@
  {
   "docstatus": 0, 
   "doctype": "Custom Script", 
-  "dt": "Delivery Note", 
-  "modified": "2017-05-23 10:19:15.570144", 
-  "name": "Delivery Note-Client", 
-  "script": "\nvar count = 0;\nfrappe.ui.form.on(\"Delivery Note\", {\n    \"refresh\": function(frm) {\n        cur_frm.add_custom_button(__('Get Memo items'), function(){\n            if(!cur_frm.doc.lpeb_item_details || cur_frm.doc.lpeb_item_details.length == 0){\n                frappe.call({\n                    \"method\": \"lpeb_erpnext.api.get_memo_details_for_si_items\",\n                    \"args\": { \"si_items\": cur_frm.doc.items, \"dispatch_order\": cur_frm.doc.lpeb_dispatch_order },\n                    \"callback\": function(r) {\n                        console.log(r);\n                        if (r.message) {\n                            console.log(\"looping\");\n                            $.each(r.message, function(index, item) {\n                                console.log(\"parent_item\",r.message[index].parent_item, \"count\", count)\n                                /*if (cur.frm.doc.lpeb_item_details != 1) {*/\n                                var row = frappe.model.add_child(cur_frm.doc, \"LPEB Delivery Note Item Detail\", \"lpeb_item_details\");\n                                row.item = item.item_code;\n                                row.item_name = item.item_name;\n                                row.qty = item.qty;\n                                row.weight = item.weight;\n                                row.uom = item.uom;\n                                row.parent_item = item.parent_item;\n                                count=count+1;\n                            /*}*/\n                            });\n\n                        }\n                        cur_frm.refresh_field(\"lpeb_item_details\");\n                    }\n                });\n            }\n        });\n    }\n});\n\n", 
-  "script_type": "Client"
- }, 
- {
-  "docstatus": 0, 
-  "doctype": "Custom Script", 
   "dt": "Sales Order", 
   "modified": "2017-05-23 10:19:15.613749", 
   "name": "Sales Order-Client", 
