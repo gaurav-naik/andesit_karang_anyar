@@ -6,7 +6,7 @@ app_name = "andesit_karang_anyar"
 app_title = "Andesit Karang Anyar"
 app_publisher = "MN Technique"
 app_description = "ERPNext customization for Andesit Karang Anyar"
-app_icon = "fa fa-truck" 
+app_icon = "fa fa-truck"
 app_color = "#16161D"
 app_email = "support@castlecraft.in"
 app_license = "GPL v3"
@@ -95,7 +95,7 @@ app_include_js = "/assets/js/aka.min.js"
 # 	"weekly": [
 # 		"andesit_karang_anyar.tasks.weekly"
 # 	]
-# 	"monthly": [, 
+# 	"monthly": [,
 # 		"andesit_karang_anyar.tasks.monthly"
 # 	]
 # }
@@ -132,3 +132,4 @@ fixtures = ["Custom Script",
 			{"dt": "Workflow State", "filters": [["name", "in", ["First Weighing", "Second Weighing", "Weighing Complete"]]]},
 			{"dt": "Workflow Action", "filters": [["name", "=", "Second Weighing"]]}, 
 			{"dt": "Print Format", "filters": [["name", "=", "Print Without Amount"]]}]
+
