@@ -7,11 +7,17 @@ frappe.ui.form.on('Weighbridge Ticket', {
 	party_type: function(frm){
 		if (frm.doc.party_type==="Customer"){
 			frm.set_value("wbt_load_direction","Outgoing");
+			frm.set_value("supplier", "");
 			//Set selling price list
 		} 
 		else if (frm.doc.party_type==="Supplier") {
 			frm.set_value("wbt_load_direction","Incoming");
+			frm.set_value("customer_balance_status", "");
+			frm.set_value("customer", "");
 			//Set buying price list
+		}
+		else{
+			frm.set_value("wbt_load_direction","");
 		}
 	},
 
@@ -24,8 +30,7 @@ frappe.ui.form.on('Weighbridge Ticket', {
 	
 	refresh: function(frm, cdt, cdn) {
 		set_second_weighing_visibility(frm);
-		cur_frm.add_fetch("wbt_driver", "full_name", "driver_name");
-		cur_frm.add_fetch("wbt_vehicle", "wb_vehicle_tare_weight", "wbt_vehicle_tare_weight");
+		
 		if (frm.doc.workflow_state == "Weighing Complete") {
 			if (frm.doc.party_type == "Customer") {
 				make_btn_sales_docs(frm);
@@ -36,13 +41,45 @@ frappe.ui.form.on('Weighbridge Ticket', {
 
 		//Filter drivers by vehicle.
 		frm.set_query("wbt_driver", function() {
-		    return {
-		        query: "andesit_karang_anyar.utilities.driverlist.driver_query",
-		        filters: {"vehicleno": frm.doc.wbt_vehicle}
-		    };
+			return {
+				query: "andesit_karang_anyar.utilities.driverlist.driver_query",
+				filters: {"vehicleno": frm.doc.wbt_vehicle}
+			};
 		});
 	},
+	customer: function(frm){
+		if (frm.doc.customer != undefined && frm.doc.customer != "")  {
+			var currency = frappe.defaults.get_default('currency');
+			frappe.call({
+				method: "erpnext.accounts.utils.get_balance_on",
+				args: { "party_type": frm.doc.party_type,
+						"party": frm.doc.customer	
+					  },
+				
+				callback: function(r){
+					//console.log("FETCHING MESSAGE");
+					if (!r.message || r.message  == 0.0) {
+						frm.set_value("customer_balance_status","Customer " + frm.doc.customer + " has not made any deposit");
+					}
+					else if(r.message<0.0){
+						frm.set_value("customer_balance_status","Customer " + frm.doc.customer + " has made a deposit and balance is: " + currency + " " + Math.abs(r.message));
+					}
+					else{
+						fetch_msg_with_creditlimit(frm,r.message,currency);
+					}
+				}
+			});
+		} else {
+			frm.set_value("customer_balance_status", "");
+		}
+	}
 });
+
+function fetch_msg_with_creditlimit(frm,message,currency){
+	frappe.db.get_value("Customer", {"customer_name": frm.doc.customer}, "credit_limit", function(r) {
+		frm.set_value("customer_balance_status","Customer " + frm.doc.customer + " has a credit limit of " + currency + " " + r.credit_limit  + " and balance of " + currency + " " + message);		
+	});
+}
 
 function make_btn_purchase_docs(frm) {
 	frm.add_custom_button(__('Purchase Order'), function(){
@@ -161,4 +198,7 @@ function set_second_weighing_visibility(frm) {
 	frm.set_df_property("wbt_time_out", "hidden", condition_hidden);
 	
 }
+
 cur_frm.add_fetch("company", "default_currency", "company_currency");
+cur_frm.add_fetch("wbt_driver", "full_name", "driver_name");
+cur_frm.add_fetch("wbt_vehicle", "wb_vehicle_tare_weight", "wbt_vehicle_tare_weight");

@@ -7,7 +7,7 @@ def get_data():
 		{
 			"module_name": "Andesit Karang Anyar",
 			"color": "#16161D",
-			"icon": "icon-truck",
+			"icon": "fa fa-truck", 
 			"type": "module",
 			"label": _("AKA Weighbridge Management")
 		}
